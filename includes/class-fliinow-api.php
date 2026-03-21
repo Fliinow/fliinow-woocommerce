@@ -14,9 +14,8 @@ class Fliinow_API {
 
 	const PRODUCTION_URL  = 'https://app.fliinow.com/integration-api/v1';
 	const SANDBOX_URL     = 'https://demo.fliinow.com/integration-api/v1';
-	const MAX_RETRIES       = 2;
-	const RETRY_DELAY_SEC   = 1;
-	const MAX_RETRY_WAIT    = 5;
+	const RETRY_DELAY_SEC = 1;
+	const MAX_RETRY_WAIT  = 5;
 
 	/** @var string */
 	private $api_key;
@@ -27,19 +26,35 @@ class Fliinow_API {
 	/** @var int */
 	private $timeout;
 
+	/** @var int */
+	private $max_retries;
+
 	/** @var bool */
 	private $debug;
 
 	/**
-	 * @param string $api_key Fliinow API key (fk_test_* or fk_live_*).
-	 * @param bool   $sandbox Whether to use sandbox environment.
-	 * @param int    $timeout Request timeout in seconds.
+	 * @param string $api_key     Fliinow API key (fk_test_* or fk_live_*).
+	 * @param bool   $sandbox     Whether to use sandbox environment.
+	 * @param int    $timeout     Request timeout in seconds.
+	 * @param int    $max_retries Max retries on transient failures.
 	 */
-	public function __construct( string $api_key, bool $sandbox = false, int $timeout = 30 ) {
-		$this->api_key  = $api_key;
-		$this->base_url = $sandbox ? self::SANDBOX_URL : self::PRODUCTION_URL;
-		$this->timeout  = $timeout;
-		$this->debug    = $this->is_debug_enabled();
+	public function __construct( string $api_key, bool $sandbox = false, int $timeout = 8, int $max_retries = 0 ) {
+		$this->api_key     = $api_key;
+		$this->base_url    = $sandbox ? self::SANDBOX_URL : self::PRODUCTION_URL;
+		$this->timeout     = $timeout;
+		$this->max_retries = $max_retries;
+		$this->debug       = $this->is_debug_enabled();
+	}
+
+	/**
+	 * Return a clone configured for background work (cron).
+	 * Higher timeout (30 s) and up to 2 retries — acceptable in non-user-facing context.
+	 */
+	public function for_background(): self {
+		$clone = clone $this;
+		$clone->timeout     = 30;
+		$clone->max_retries = 2;
+		return $clone;
 	}
 
 	// ── Public API methods ─────────────────────────────────────────────────
@@ -103,7 +118,7 @@ class Fliinow_API {
 		}
 
 		$last_error = null;
-		$attempts   = self::MAX_RETRIES + 1;
+		$attempts   = $this->max_retries + 1;
 
 		for ( $attempt = 1; $attempt <= $attempts; $attempt++ ) {
 			$this->log_debug( sprintf( '[%s %s] attempt %d', $method, $path, $attempt ) );

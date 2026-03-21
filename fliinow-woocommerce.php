@@ -165,7 +165,7 @@ function fliinow_wc_check_pending_orders() {
 		return;
 	}
 
-	$api = $gateway->get_api();
+	$api = $gateway->get_api()->for_background();
 
 	foreach ( $orders as $order ) {
 		$operation_id = $order->get_meta( '_fliinow_operation_id' );

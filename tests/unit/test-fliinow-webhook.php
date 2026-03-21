@@ -244,7 +244,7 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 		$this->assertSame( 'REFUSED', $order->get_meta( '_fliinow_status' ) );
 	}
 
-	public function test_error_callback_without_operation_id_cancels_order(): void {
+	public function test_error_callback_without_operation_id_holds_order(): void {
 		$order = new WC_Order( 1 );
 		// No _fliinow_operation_id set.
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
@@ -261,7 +261,49 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 			// Expected redirect.
 		}
 
-		$this->assertSame( 'cancelled', $order->get_status() );
+		$this->assertSame( 'on-hold', $order->get_status() );
+	}
+
+	public function test_success_callback_without_operation_id_holds_order(): void {
+		$order = new WC_Order( 1 );
+		// No _fliinow_operation_id set.
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'success',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'on-hold', $order->get_status() );
+	}
+
+	public function test_success_callback_with_api_unreachable_holds_order(): void {
+		$order = new WC_Order( 1 );
+		$order->set_meta( '_fliinow_operation_id', 'op_test_unreachable' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		fliinow_test_mock_transport_error();
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'success',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'on-hold', $order->get_status() );
 	}
 
 	// ── Security: validate_callback uses only order_key (F4) ──────────────

@@ -131,6 +131,13 @@ class Fliinow_Webhook {
 					$order->save();
 				}
 			}
+		} else {
+			// Cannot verify — hold for cron.
+			$gateway->log( 'Cannot verify Fliinow status for order #' . $order->get_id() . ': no API or operation ID', 'warning' );
+			if ( $order->has_status( 'pending' ) ) {
+				$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (sin datos de operación).', 'fliinow-woocommerce' ) );
+				$order->save();
+			}
 		}
 
 		wp_safe_redirect( $order->get_checkout_order_received_url() );
@@ -180,7 +187,24 @@ class Fliinow_Webhook {
 					wp_safe_redirect( $order->get_checkout_order_received_url() );
 					exit;
 				}
-				// REJECTED — fall through to cancel below.
+				// REJECTED — confirmed by API, cancel the order.
+				$gateway->log( 'Error callback — Fliinow confirms REJECTED (' . $fliinow_status . ') for order #' . $order->get_id() );
+				$order->update_status(
+					'cancelled',
+					sprintf( __( 'Financiación rechazada — %s', 'fliinow-woocommerce' ), $fliinow_status )
+				);
+
+				foreach ( $order->get_items() as $item ) {
+					WC()->cart->add_to_cart( $item->get_product_id(), $item->get_quantity(), $item->get_variation_id(), $item->get_meta( '_variation_attributes', true ) ?: array() );
+				}
+
+				wc_add_notice(
+					__( 'La financiación no se ha completado. Puedes intentarlo de nuevo o elegir otro método de pago.', 'fliinow-woocommerce' ),
+					'error'
+				);
+
+				wp_safe_redirect( wc_get_checkout_url() );
+				exit;
 			} else {
 				// API unreachable — put on hold so cron can verify later.
 				$gateway->log( 'Error callback but cannot verify Fliinow status for order #' . $order->get_id() . ': ' . $result->get_error_message(), 'warning' );
@@ -189,26 +213,14 @@ class Fliinow_Webhook {
 				wp_safe_redirect( $order->get_checkout_order_received_url() );
 				exit;
 			}
+		} else {
+			// Cannot verify — hold for cron instead of cancelling blind.
+			$gateway->log( 'Error callback but cannot verify Fliinow status for order #' . $order->get_id() . ': no API or operation ID', 'warning' );
+			$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (sin datos de operación).', 'fliinow-woocommerce' ) );
+			$order->save();
+			wp_safe_redirect( $order->get_checkout_order_received_url() );
+			exit;
 		}
-
-		// Confirmed rejected or no API/operation — cancel.
-		$order->update_status(
-			'cancelled',
-			__( 'Financiación Fliinow no completada o cancelada por el cliente.', 'fliinow-woocommerce' )
-		);
-
-		// Restore cart items so customer can choose another payment method.
-		foreach ( $order->get_items() as $item ) {
-			WC()->cart->add_to_cart( $item->get_product_id(), $item->get_quantity(), $item->get_variation_id(), $item->get_meta( '_variation_attributes', true ) ?: array() );
-		}
-
-		wc_add_notice(
-			__( 'La financiación no se ha completado. Puedes intentarlo de nuevo o elegir otro método de pago.', 'fliinow-woocommerce' ),
-			'error'
-		);
-
-		wp_safe_redirect( wc_get_checkout_url() );
-		exit;
 	}
 
 	// ── Helpers ────────────────────────────────────────────────────────────

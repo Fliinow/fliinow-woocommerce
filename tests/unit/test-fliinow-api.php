@@ -212,71 +212,90 @@ class Test_Fliinow_API extends PHPUnit\Framework\TestCase {
 		$this->assertTrue( $result['success'] );
 	}
 
-	// ── Retry logic ────────────────────────────────────────────────────────
-
-	public function test_retries_on_transport_error_then_succeeds(): void {
-		// First: transport error, second: success.
-		fliinow_test_mock_transport_error( 'http_request_failed', 'Connection timed out' );
-		fliinow_test_mock_response( 200, array( 'status' => 'UP' ) );
-
-		$result = $this->api->health();
-
-		$this->assertIsArray( $result );
-		$this->assertSame( 'UP', $result['status'] );
-	}
-
-	public function test_retries_on_502_then_succeeds(): void {
-		// First: 502, second: success.
-		fliinow_test_mock_response( 502, 'Bad Gateway' );
-		fliinow_test_mock_response( 200, array( 'status' => 'UP' ) );
-
-		$result = $this->api->health();
-
-		$this->assertIsArray( $result );
-		$this->assertSame( 'UP', $result['status'] );
-	}
-
-	public function test_retries_on_503_then_succeeds(): void {
-		fliinow_test_mock_response( 503, 'Service Unavailable' );
-		fliinow_test_mock_response( 200, array( 'id' => 'op_1' ) );
-
-		$result = $this->api->get_operation( 'op_1' );
-
-		$this->assertIsArray( $result );
-		$this->assertSame( 'op_1', $result['id'] );
-	}
-
-	public function test_retries_on_504_then_succeeds(): void {
-		fliinow_test_mock_response( 504, 'Gateway Timeout' );
-		fliinow_test_mock_response( 200, array( 'status' => 'UP' ) );
-
-		$result = $this->api->health();
-
-		$this->assertIsArray( $result );
-	}
-
-	public function test_exhausted_retries_returns_last_error(): void {
-		// 3 transport errors (exhausts all retries: MAX_RETRIES=2 → 3 total attempts).
-		fliinow_test_mock_transport_error( 'http_request_failed', 'Error 1' );
-		fliinow_test_mock_transport_error( 'http_request_failed', 'Error 2' );
-		fliinow_test_mock_transport_error( 'http_request_failed', 'Error 3' );
+	public function test_no_retry_with_default_config(): void {
+		// Default API (max_retries=0) should return error immediately on transport failure.
+		fliinow_test_mock_transport_error( 'http_request_failed', 'Timeout' );
 
 		$result = $this->api->health();
 
 		$this->assertInstanceOf( WP_Error::class, $result );
 	}
 
+	public function test_no_retry_on_502_with_default_config(): void {
+		// Default API should parse 502 as error, not retry.
+		fliinow_test_mock_response( 502, 'Bad Gateway' );
+
+		$result = $this->api->health();
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+	}
+
+	// ── Retry logic (uses background-style API with retries enabled) ───────
+
+	public function test_retries_on_transport_error_then_succeeds(): void {
+		$api = $this->create_api_with_retries();
+		fliinow_test_mock_transport_error( 'http_request_failed', 'Connection timed out' );
+		fliinow_test_mock_response( 200, array( 'status' => 'UP' ) );
+
+		$result = $api->health();
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 'UP', $result['status'] );
+	}
+
+	public function test_retries_on_502_then_succeeds(): void {
+		$api = $this->create_api_with_retries();
+		fliinow_test_mock_response( 502, 'Bad Gateway' );
+		fliinow_test_mock_response( 200, array( 'status' => 'UP' ) );
+
+		$result = $api->health();
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 'UP', $result['status'] );
+	}
+
+	public function test_retries_on_503_then_succeeds(): void {
+		$api = $this->create_api_with_retries();
+		fliinow_test_mock_response( 503, 'Service Unavailable' );
+		fliinow_test_mock_response( 200, array( 'id' => 'op_1' ) );
+
+		$result = $api->get_operation( 'op_1' );
+
+		$this->assertIsArray( $result );
+		$this->assertSame( 'op_1', $result['id'] );
+	}
+
+	public function test_retries_on_504_then_succeeds(): void {
+		$api = $this->create_api_with_retries();
+		fliinow_test_mock_response( 504, 'Gateway Timeout' );
+		fliinow_test_mock_response( 200, array( 'status' => 'UP' ) );
+
+		$result = $api->health();
+
+		$this->assertIsArray( $result );
+	}
+
+	public function test_exhausted_retries_returns_last_error(): void {
+		$api = $this->create_api_with_retries();
+		// 3 transport errors (exhausts all retries: max_retries=2 → 3 total attempts).
+		fliinow_test_mock_transport_error( 'http_request_failed', 'Error 1' );
+		fliinow_test_mock_transport_error( 'http_request_failed', 'Error 2' );
+		fliinow_test_mock_transport_error( 'http_request_failed', 'Error 3' );
+
+		$result = $api->health();
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+	}
+
 	public function test_exhausted_retries_on_502_returns_error(): void {
+		$api = $this->create_api_with_retries();
 		// 3 × 502 (all attempts fail).
 		fliinow_test_mock_response( 502, 'Bad Gateway' );
 		fliinow_test_mock_response( 502, 'Bad Gateway' );
 		fliinow_test_mock_response( 502, 'Bad Gateway' );
 
-		$result = $this->api->health();
+		$result = $api->health();
 
-		// On the 3rd 502, it should NOT retry and instead parse the last response.
-		// Since status >= 400 is not triggered for 502 (it's 502 >= 400), let's check:
-		// Actually after exhausting retries on 502, the last 502 response gets parsed.
 		$this->assertInstanceOf( WP_Error::class, $result );
 	}
 
@@ -324,8 +343,48 @@ class Test_Fliinow_API extends PHPUnit\Framework\TestCase {
 		$this->assertSame( 5, Fliinow_API::MAX_RETRY_WAIT );
 	}
 
-	public function test_max_retries_constant(): void {
-		$this->assertSame( 2, Fliinow_API::MAX_RETRIES );
+	public function test_default_timeout_is_8_seconds(): void {
+		$api = new Fliinow_API( 'fk_test_x', true );
+		$ref = new ReflectionProperty( Fliinow_API::class, 'timeout' );
+		$ref->setAccessible( true );
+		$this->assertSame( 8, $ref->getValue( $api ) );
+	}
+
+	public function test_default_max_retries_is_zero(): void {
+		$api = new Fliinow_API( 'fk_test_x', true );
+		$ref = new ReflectionProperty( Fliinow_API::class, 'max_retries' );
+		$ref->setAccessible( true );
+		$this->assertSame( 0, $ref->getValue( $api ) );
+	}
+
+	public function test_for_background_increases_timeout_and_retries(): void {
+		$api = new Fliinow_API( 'fk_test_x', true );
+		$bg  = $api->for_background();
+
+		$timeout_ref = new ReflectionProperty( Fliinow_API::class, 'timeout' );
+		$timeout_ref->setAccessible( true );
+		$retries_ref = new ReflectionProperty( Fliinow_API::class, 'max_retries' );
+		$retries_ref->setAccessible( true );
+
+		$this->assertSame( 30, $timeout_ref->getValue( $bg ) );
+		$this->assertSame( 2, $retries_ref->getValue( $bg ) );
+
+		// Original unchanged.
+		$this->assertSame( 8, $timeout_ref->getValue( $api ) );
+		$this->assertSame( 0, $retries_ref->getValue( $api ) );
+	}
+
+	public function test_for_background_preserves_api_key_and_base_url(): void {
+		$api = new Fliinow_API( 'fk_test_x', true );
+		$bg  = $api->for_background();
+
+		$key_ref = new ReflectionProperty( Fliinow_API::class, 'api_key' );
+		$key_ref->setAccessible( true );
+		$url_ref = new ReflectionProperty( Fliinow_API::class, 'base_url' );
+		$url_ref->setAccessible( true );
+
+		$this->assertSame( $key_ref->getValue( $api ), $key_ref->getValue( $bg ) );
+		$this->assertSame( $url_ref->getValue( $api ), $url_ref->getValue( $bg ) );
 	}
 
 	// ── URL encoding ───────────────────────────────────────────────────────
@@ -354,5 +413,9 @@ class Test_Fliinow_API extends PHPUnit\Framework\TestCase {
 		$prop = $ref->getProperty( 'base_url' );
 		$prop->setAccessible( true );
 		$this->assertSame( Fliinow_API::PRODUCTION_URL, $prop->getValue( $api ) );
+	}
+
+	private function create_api_with_retries(): Fliinow_API {
+		return new Fliinow_API( 'fk_test_abc123', true, 8, 2 );
 	}
 }
