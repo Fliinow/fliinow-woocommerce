@@ -1,0 +1,24 @@
+{
+  "name": "fliinow-woocommerce",
+  "version": "1.0.0",
+  "description": "Fliinow financing payment method for WooCommerce (Blocks + Classic)",
+  "private": true,
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "lint": "wp-scripts lint-js src/",
+    "test:js": "wp-scripts test-unit-js --config jest.config.js",
+    "test:php": "vendor/bin/phpunit",
+    "test:php:unit": "vendor/bin/phpunit --testsuite=unit",
+    "test:php:integration": "vendor/bin/phpunit --testsuite=integration",
+    "test": "npm run test:js"
+  },
+  "devDependencies": {
+    "@woocommerce/dependency-extraction-webpack-plugin": "^2.3.0",
+    "@wordpress/dependency-extraction-webpack-plugin": "^6.14.0",
+    "@wordpress/scripts": "^30.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
