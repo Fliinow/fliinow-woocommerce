@@ -1,0 +1,207 @@
+# Copyright (C) 2024 Fliinow
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Fliinow - Financiación para WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/Fliinow/fliinow-woocommerce/issues\n"
+"POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: none\n"
+"X-Domain: fliinow-woocommerce\n"
+
+#: fliinow-woocommerce.php
+msgid "Fliinow para WooCommerce requiere que WooCommerce esté instalado y activo."
+msgstr ""
+
+#: fliinow-woocommerce.php
+msgid "Ajustes"
+msgstr ""
+
+#: fliinow-woocommerce.php
+msgid "API Key no configurada."
+msgstr ""
+
+#: fliinow-woocommerce.php
+msgid "Conexión OK (%s)"
+msgstr ""
+
+#: fliinow-woocommerce.php
+msgid "Probar conexión API"
+msgstr ""
+
+#: fliinow-woocommerce.php
+msgid "[Cron] Financiación Fliinow aprobada — %s"
+msgstr ""
+
+#: fliinow-woocommerce.php
+msgid "[Cron] Financiación rechazada/expirada — %s"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Activar/Desactivar"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Activar financiación con Fliinow"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Título"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Nombre que verá el cliente en el checkout."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Financiar con Fliinow"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Descripción"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Descripción que verá el cliente en el checkout."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Financia tu compra a plazos. Serás redirigido a Fliinow para completar la solicitud de financiación."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "API Key"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Claves sandbox: fk_test_*   Producción: fk_live_*"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Modo Sandbox"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Activar entorno de pruebas (demo.fliinow.com)"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Desactiva para producción (app.fliinow.com)."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Verificar conexión"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Importe mínimo (€)"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Importe mínimo del carrito para mostrar la opción."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Importe máximo (€)"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "0 = sin límite."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Viaje combinado"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Marcar como viaje combinado (EU Package Travel Directive)"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Log de depuración"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Activar logs"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "WooCommerce → Estado → Logs (fuente: fliinow)."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Fliinow - Financiación"
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Permite a tus clientes financiar sus compras a plazos con Fliinow."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Error al procesar el pedido."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Fliinow no está configurado correctamente."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "No se pudo iniciar la financiación. Por favor, inténtalo de nuevo."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Error inesperado al conectar con Fliinow."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Esperando financiación de Fliinow."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Pedido no encontrado."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Fliinow no está configurado."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "No se encontró la operación de Fliinow asociada."
+msgstr ""
+
+#: includes/class-fliinow-gateway.php
+msgid "Pedido #%s"
+msgstr ""
+
+#: includes/class-fliinow-webhook.php
+msgid "Financiación Fliinow aprobada. Estado: %1$s. Operación: %2$s"
+msgstr ""
+
+#: includes/class-fliinow-webhook.php
+msgid "Financiación en proceso — %s"
+msgstr ""
+
+#: includes/class-fliinow-webhook.php
+msgid "Financiación rechazada — %s"
+msgstr ""
+
+#: includes/class-fliinow-webhook.php
+msgid "Esperando verificación de Fliinow (error de red temporal)."
+msgstr ""
+
+#: includes/class-fliinow-webhook.php
+msgid "Financiación Fliinow no completada o cancelada por el cliente."
+msgstr ""
+
+#: includes/class-fliinow-webhook.php
+msgid "La financiación no se ha completado. Puedes intentarlo de nuevo o elegir otro método de pago."
+msgstr ""
+
+#: includes/class-fliinow-blocks.php
+msgid "Financia tu compra a plazos."
+msgstr ""

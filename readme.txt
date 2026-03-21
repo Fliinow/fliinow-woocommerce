@@ -4,8 +4,6 @@ Tags: financing, payment, installments, travel, bnpl
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-WC requires at least: 8.0
-WC tested up to: 9.6
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -45,12 +43,6 @@ checkout basado en bloques (WooCommerce Blocks).
 4. Introduce tu API Key proporcionada por Fliinow
 5. Activa el modo sandbox para probar antes de ir a producción
 
-**Compilar el JavaScript (para WooCommerce Blocks):**
-
-    cd fliinow-woocommerce
-    npm install
-    npm run build
-
 == Frequently Asked Questions ==
 
 = ¿Necesito una cuenta de Fliinow? =
@@ -79,3 +71,13 @@ Sí. Usa el filtro `fliinow_wc_operation_data` para modificar el payload:
 * Configuración de sandbox/producción
 * Callbacks de éxito/error
 * Soporte HPOS
+
+== Screenshots ==
+
+1. Configuración del método de pago en WooCommerce → Ajustes → Pagos
+2. Método de pago visible en el checkout del cliente
+
+== Upgrade Notice ==
+
+= 1.0.0 =
+Versión inicial.

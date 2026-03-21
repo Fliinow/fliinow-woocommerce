@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    verbose="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    beStrictAboutOutputDuringTests="true"
+>
+    <testsuites>
+        <testsuite name="unit">
+            <directory suffix=".php">tests/unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory suffix=".php">tests/integration</directory>
+        </testsuite>
+    </testsuites>
+    <php>
+        <!-- Copy this file to phpunit.xml and set your own API key for integration tests -->
+        <env name="FLIINOW_TEST_API_KEY" value=""/>
+        <env name="FLIINOW_TEST_SANDBOX" value="true"/>
+    </php>
+</phpunit>
