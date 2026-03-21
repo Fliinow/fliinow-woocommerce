@@ -32,8 +32,10 @@ the block-based checkout (WooCommerce Blocks).
 2. At checkout, selects "Finance with Fliinow"
 3. Places the order and is redirected to Fliinow
 4. Chooses a financing plan and completes the application
-5. If approved, the order is automatically confirmed
-6. If rejected/cancelled, the order is marked as failed
+5. Plugin verifies the real status via the Fliinow API:
+   - Approved → order automatically confirmed
+   - Pending or unverifiable → order on-hold (background cron retries)
+   - Rejected/cancelled → order cancelled, cart restored
 
 == Installation ==
 
