@@ -168,12 +168,12 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 		$this->assertStringContainsString( 'status=error', $data['errorCallbackUrl'] );
 	}
 
-	public function test_build_operation_data_callbacks_contain_nonce(): void {
+	public function test_build_operation_data_callbacks_do_not_contain_nonce(): void {
 		$order = $this->create_order();
 		$data  = $this->invoke_build_operation_data( $order );
 
-		$this->assertStringContainsString( '_wpnonce=', $data['successCallbackUrl'] );
-		$this->assertStringContainsString( '_wpnonce=', $data['errorCallbackUrl'] );
+		$this->assertStringNotContainsString( '_wpnonce=', $data['successCallbackUrl'] );
+		$this->assertStringNotContainsString( '_wpnonce=', $data['errorCallbackUrl'] );
 	}
 
 	public function test_build_operation_data_package_travel_bool(): void {
@@ -453,7 +453,8 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 
 		fliinow_test_mock_response( 204, '' );
 
-		$result = $this->gateway->process_refund( 1, 50.0, 'Customer request' );
+		// Full amount = order total (150.00) — partial refunds are rejected.
+		$result = $this->gateway->process_refund( 1, 150.0, 'Customer request' );
 
 		$this->assertTrue( $result );
 		$this->assertSame( 'CANCELLED', $order->get_meta( '_fliinow_status' ) );
@@ -463,7 +464,7 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 		$order = $this->create_order();
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
 
-		$result = $this->gateway->process_refund( 1, 50.0 );
+		$result = $this->gateway->process_refund( 1, 150.0 );
 
 		$this->assertInstanceOf( WP_Error::class, $result );
 	}
@@ -471,9 +472,80 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 	public function test_refund_no_order(): void {
 		$GLOBALS['fliinow_test_mocks']['current_order'] = null;
 
-		$result = $this->gateway->process_refund( 999, 50.0 );
+		$result = $this->gateway->process_refund( 999, 150.0 );
 
 		$this->assertInstanceOf( WP_Error::class, $result );
+	}
+
+	// ── Security: partial refund rejection (F3) ──────────────────────────
+
+	public function test_refund_rejects_partial_amount(): void {
+		$order = $this->create_order(); // total = 150.00
+		$order->set_meta( '_fliinow_operation_id', 'op_test_partial' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		$result = $this->gateway->process_refund( 1, 50.0, 'Partial refund' );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+		$this->assertSame( 'fliinow_refund_error', $result->get_error_code() );
+		$this->assertStringContainsString( 'parcial', $result->get_error_message() );
+	}
+
+	public function test_refund_accepts_full_amount(): void {
+		$order = $this->create_order();
+		$order->set_meta( '_fliinow_operation_id', 'op_test_full' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		fliinow_test_mock_response( 204, '' );
+
+		$result = $this->gateway->process_refund( 1, 150.0, 'Full refund' );
+
+		$this->assertTrue( $result );
+	}
+
+	public function test_refund_accepts_null_amount(): void {
+		$order = $this->create_order();
+		$order->set_meta( '_fliinow_operation_id', 'op_test_null' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		fliinow_test_mock_response( 204, '' );
+
+		$result = $this->gateway->process_refund( 1, null, 'Full cancel' );
+
+		$this->assertTrue( $result );
+	}
+
+	public function test_refund_rejects_penny_less_than_total(): void {
+		$order = $this->create_order(); // total = 150.00
+		$order->set_meta( '_fliinow_operation_id', 'op_test_penny' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		$result = $this->gateway->process_refund( 1, 149.99, 'Almost full' );
+
+		$this->assertInstanceOf( WP_Error::class, $result );
+	}
+
+	// ── Security: callback URLs no nonce (F4) ─────────────────────────────
+
+	public function test_callback_urls_only_contain_order_id_key_status(): void {
+		$order = $this->create_order();
+		$data  = $this->invoke_build_operation_data( $order );
+
+		$success = $data['successCallbackUrl'];
+		$error   = $data['errorCallbackUrl'];
+
+		// Must contain required params.
+		$this->assertStringContainsString( 'order_id=', $success );
+		$this->assertStringContainsString( 'order_key=', $success );
+		$this->assertStringContainsString( 'status=success', $success );
+
+		$this->assertStringContainsString( 'order_id=', $error );
+		$this->assertStringContainsString( 'order_key=', $error );
+		$this->assertStringContainsString( 'status=error', $error );
+
+		// Must NOT contain nonce.
+		$this->assertStringNotContainsString( '_wpnonce', $success );
+		$this->assertStringNotContainsString( '_wpnonce', $error );
 	}
 
 	// ── Helpers ────────────────────────────────────────────────────────────

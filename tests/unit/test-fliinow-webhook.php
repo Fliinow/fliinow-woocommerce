@@ -114,12 +114,12 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 
 	public function test_validate_callback_rejects_missing_order_id(): void {
 		$this->expectException( Fliinow_Test_Redirect_Exception::class );
-		$this->invoke_validate_callback( 0, 'key', '' );
+		$this->invoke_validate_callback( 0, 'key' );
 	}
 
 	public function test_validate_callback_rejects_missing_order_key(): void {
 		$this->expectException( Fliinow_Test_Redirect_Exception::class );
-		$this->invoke_validate_callback( 1, '', '' );
+		$this->invoke_validate_callback( 1, '' );
 	}
 
 	public function test_validate_callback_rejects_wrong_order_key(): void {
@@ -127,7 +127,7 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
 
 		$this->expectException( Fliinow_Test_Redirect_Exception::class );
-		$this->invoke_validate_callback( 1, 'wrong_key', '' );
+		$this->invoke_validate_callback( 1, 'wrong_key' );
 	}
 
 	public function test_validate_callback_rejects_non_fliinow_order(): void {
@@ -136,15 +136,139 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
 
 		$this->expectException( Fliinow_Test_Redirect_Exception::class );
-		$this->invoke_validate_callback( 1, 'wc_order_abc123', '' );
+		$this->invoke_validate_callback( 1, 'wc_order_abc123' );
 	}
 
 	public function test_validate_callback_accepts_valid_order(): void {
 		$order = new WC_Order( 1 );
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
 
-		$result = $this->invoke_validate_callback( 1, 'wc_order_abc123', '' );
+		$result = $this->invoke_validate_callback( 1, 'wc_order_abc123' );
 		$this->assertInstanceOf( WC_Order::class, $result );
+	}
+
+	// ── Security: handle_error verifies API before cancelling (F1) ────────
+
+	public function test_error_callback_with_approved_status_completes_order(): void {
+		$order = new WC_Order( 1 );
+		$order->set_meta( '_fliinow_operation_id', 'op_test_f1' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		// Simulate Fliinow API returning FAVORABLE.
+		fliinow_test_mock_response( 200, array( 'status' => 'FAVORABLE' ) );
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'error',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'completed', $order->get_status() );
+		$this->assertSame( 'FAVORABLE', $order->get_meta( '_fliinow_status' ) );
+	}
+
+	public function test_error_callback_with_pending_status_holds_order(): void {
+		$order = new WC_Order( 1 );
+		$order->set_meta( '_fliinow_operation_id', 'op_test_f1_pending' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		fliinow_test_mock_response( 200, array( 'status' => 'PENDING' ) );
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'error',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'on-hold', $order->get_status() );
+		$this->assertSame( 'PENDING', $order->get_meta( '_fliinow_status' ) );
+	}
+
+	public function test_error_callback_with_api_unreachable_holds_order(): void {
+		$order = new WC_Order( 1 );
+		$order->set_meta( '_fliinow_operation_id', 'op_test_f1_unreachable' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		// Simulate API transport error on all attempts.
+		fliinow_test_mock_transport_error();
+		fliinow_test_mock_transport_error();
+		fliinow_test_mock_transport_error();
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'error',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'on-hold', $order->get_status() );
+	}
+
+	public function test_error_callback_with_refused_status_cancels_order(): void {
+		$order = new WC_Order( 1 );
+		$order->set_meta( '_fliinow_operation_id', 'op_test_f1_refused' );
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		fliinow_test_mock_response( 200, array( 'status' => 'REFUSED' ) );
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'error',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'cancelled', $order->get_status() );
+		$this->assertSame( 'REFUSED', $order->get_meta( '_fliinow_status' ) );
+	}
+
+	public function test_error_callback_without_operation_id_cancels_order(): void {
+		$order = new WC_Order( 1 );
+		// No _fliinow_operation_id set.
+		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
+
+		$_GET = array(
+			'order_id'  => '1',
+			'order_key' => 'wc_order_abc123',
+			'status'    => 'error',
+		);
+
+		try {
+			Fliinow_Webhook::handle_callback();
+		} catch ( Fliinow_Test_Redirect_Exception $e ) {
+			// Expected redirect.
+		}
+
+		$this->assertSame( 'cancelled', $order->get_status() );
+	}
+
+	// ── Security: validate_callback uses only order_key (F4) ──────────────
+
+	public function test_validate_callback_takes_only_two_params(): void {
+		$ref = new ReflectionMethod( Fliinow_Webhook::class, 'validate_callback' );
+		$this->assertSame( 2, $ref->getNumberOfParameters() );
 	}
 
 	// ── Helpers ────────────────────────────────────────────────────────────
@@ -152,9 +276,9 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 	/**
 	 * Call the private validate_callback method via reflection.
 	 */
-	private function invoke_validate_callback( int $order_id, string $order_key, string $nonce ) {
+	private function invoke_validate_callback( int $order_id, string $order_key ) {
 		$ref = new ReflectionMethod( Fliinow_Webhook::class, 'validate_callback' );
 		$ref->setAccessible( true );
-		return $ref->invoke( null, $order_id, $order_key, $nonce );
+		return $ref->invoke( null, $order_id, $order_key );
 	}
 }

@@ -318,6 +318,16 @@ class Test_Fliinow_API extends PHPUnit\Framework\TestCase {
 		$this->assertSame( 'Valid API key required.', $result->get_error_message() );
 	}
 
+	// ── Security: Retry-After cap (F2) ────────────────────────────────────
+
+	public function test_max_retry_wait_constant_exists(): void {
+		$this->assertSame( 5, Fliinow_API::MAX_RETRY_WAIT );
+	}
+
+	public function test_max_retries_constant(): void {
+		$this->assertSame( 2, Fliinow_API::MAX_RETRIES );
+	}
+
 	// ── URL encoding ───────────────────────────────────────────────────────
 
 	public function test_operation_id_is_url_encoded(): void {

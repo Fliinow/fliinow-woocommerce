@@ -14,8 +14,9 @@ class Fliinow_API {
 
 	const PRODUCTION_URL  = 'https://app.fliinow.com/integration-api/v1';
 	const SANDBOX_URL     = 'https://demo.fliinow.com/integration-api/v1';
-	const MAX_RETRIES     = 2;
-	const RETRY_DELAY_SEC = 1;
+	const MAX_RETRIES       = 2;
+	const RETRY_DELAY_SEC   = 1;
+	const MAX_RETRY_WAIT    = 5;
 
 	/** @var string */
 	private $api_key;
@@ -126,7 +127,8 @@ class Fliinow_API {
 			if ( in_array( $status_code, array( 502, 503, 504 ), true ) && $attempt < $attempts ) {
 				$this->log_debug( sprintf( 'HTTP %d — retrying…', $status_code ) );
 				$retry_after = (int) wp_remote_retrieve_header( $response, 'retry-after' );
-				sleep( max( $retry_after, self::RETRY_DELAY_SEC * $attempt ) );
+				$wait = min( max( $retry_after, self::RETRY_DELAY_SEC * $attempt ), self::MAX_RETRY_WAIT );
+				sleep( $wait );
 				continue;
 			}
 

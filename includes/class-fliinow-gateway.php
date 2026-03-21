@@ -261,6 +261,11 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 			return new WP_Error( 'fliinow_refund_error', __( 'Fliinow no está configurado.', 'fliinow-woocommerce' ) );
 		}
 
+		// Fliinow only supports full cancellation — reject partial refunds.
+		if ( null !== $amount && round( (float) $amount, 2 ) < round( (float) $order->get_total(), 2 ) ) {
+			return new WP_Error( 'fliinow_refund_error', __( 'Fliinow no soporta reembolsos parciales. Solo se puede cancelar la operación completa.', 'fliinow-woocommerce' ) );
+		}
+
 		$operation_id = $order->get_meta( '_fliinow_operation_id' );
 		if ( empty( $operation_id ) ) {
 			return new WP_Error( 'fliinow_refund_error', __( 'No se encontró la operación de Fliinow asociada.', 'fliinow-woocommerce' ) );
@@ -285,12 +290,9 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 	private function build_operation_data( WC_Order $order ): array {
 		$callback_base = WC()->api_request_url( 'fliinow_callback' );
 
-		$nonce = wp_create_nonce( 'fliinow_callback_' . $order->get_id() );
-
 		$common_args = array(
 			'order_id'  => $order->get_id(),
 			'order_key' => $order->get_order_key(),
-			'_wpnonce'  => $nonce,
 		);
 
 		$success_url = add_query_arg( array_merge( $common_args, array( 'status' => 'success' ) ), $callback_base );
