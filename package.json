@@ -1,6 +1,6 @@
 {
   "name": "fliinow-woocommerce",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Fliinow financing payment method for WooCommerce (Blocks + Classic)",
   "private": true,
   "scripts": {

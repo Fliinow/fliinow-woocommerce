@@ -4,7 +4,7 @@ Tags: financing, payment, installments, travel, bnpl
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -65,6 +65,16 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 
 == Changelog ==
 
+= 1.1.0 =
+* Security: callback handler now verifies real operation status via Fliinow API before acting
+* Security: orders go to on-hold (not cancelled) when status cannot be verified — cron picks them up
+* Security: API client defaults to 8s timeout / 0 retries for user-facing paths (checkout, callback)
+* Security: background cron uses dedicated profile with 30s timeout / 2 retries
+* Security: Retry-After header capped to 5s to prevent worker blocking
+* Security: partial refunds rejected — Fliinow only supports full cancellation
+* Security: nonce removed from callback URLs — order_key is the sole auth factor
+* Tests: 126 PHP unit + 17 JS = 143 total
+
 = 1.0.0 =
 * Initial release
 * Payment gateway with classic and block-based checkout support
@@ -78,6 +88,9 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 2. Payment method visible at customer checkout
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Security hardening: callback verification, retry policy, partial refund protection. Recommended update.
 
 = 1.0.0 =
 Initial release.
