@@ -1,4 +1,4 @@
-=== Fliinow - Financiación para WooCommerce ===
+=== Fliinow - Financing for WooCommerce ===
 Contributors: fliinow
 Tags: financing, payment, installments, travel, bnpl
 Requires at least: 6.0
@@ -8,76 +8,76 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Ofrece financiación a plazos en el checkout de WooCommerce con Fliinow.
+Offer installment financing at your WooCommerce checkout with Fliinow.
 
 == Description ==
 
-Fliinow permite a tus clientes financiar sus compras a plazos directamente
-desde el checkout de WooCommerce. Compatible con el checkout clásico y el
-checkout basado en bloques (WooCommerce Blocks).
+Fliinow lets your customers finance their purchases in installments directly
+from the WooCommerce checkout. Compatible with both the classic checkout and
+the block-based checkout (WooCommerce Blocks).
 
-**Características:**
+**Features:**
 
-* Método de pago integrado en el checkout de WooCommerce
-* Compatible con WooCommerce Blocks (checkout por bloques)
-* Entorno sandbox para pruebas
-* Configuración de importes mínimos y máximos
-* Logs de depuración integrados
-* Compatible con HPOS (High-Performance Order Storage)
-* Extensible mediante filtros de WordPress
+* Payment method integrated into the WooCommerce checkout
+* Compatible with WooCommerce Blocks (block-based checkout)
+* Sandbox environment for testing
+* Configurable minimum and maximum amounts
+* Built-in debug logging
+* Compatible with HPOS (High-Performance Order Storage)
+* Extensible via WordPress filters
 
-**Flujo del cliente:**
+**Customer flow:**
 
-1. El cliente añade productos al carrito
-2. En el checkout, selecciona "Financiar con Fliinow"
-3. Completa el pedido y es redirigido a Fliinow
-4. En Fliinow elige el plan de financiación y completa la solicitud
-5. Si se aprueba, se confirma el pedido automáticamente
-6. Si se rechaza/cancela, el pedido queda como fallido
+1. Customer adds products to the cart
+2. At checkout, selects "Finance with Fliinow"
+3. Places the order and is redirected to Fliinow
+4. Chooses a financing plan and completes the application
+5. If approved, the order is automatically confirmed
+6. If rejected/cancelled, the order is marked as failed
 
 == Installation ==
 
-1. Sube la carpeta `fliinow-woocommerce` al directorio `/wp-content/plugins/`
-2. Activa el plugin desde 'Plugins' en WordPress
-3. Ve a WooCommerce → Ajustes → Pagos → Fliinow
-4. Introduce tu API Key proporcionada por Fliinow
-5. Activa el modo sandbox para probar antes de ir a producción
+1. Upload the `fliinow-woocommerce` folder to `/wp-content/plugins/`
+2. Activate the plugin from the 'Plugins' menu in WordPress
+3. Go to WooCommerce → Settings → Payments → Fliinow
+4. Enter your API Key provided by Fliinow
+5. Enable sandbox mode to test before going to production
 
 == Frequently Asked Questions ==
 
-= ¿Necesito una cuenta de Fliinow? =
+= Do I need a Fliinow account? =
 
-Sí. Contacta con partners@fliinow.com para obtener tus credenciales API.
+Yes. Contact partners@fliinow.com to get your API credentials.
 
-= ¿Funciona con el checkout por bloques? =
+= Does it work with the block-based checkout? =
 
-Sí. El plugin soporta tanto el checkout clásico como el basado en bloques.
+Yes. The plugin supports both the classic and block-based checkout.
 
-= ¿Puedo personalizar los datos enviados a Fliinow? =
+= Can I customize the data sent to Fliinow? =
 
-Sí. Usa el filtro `fliinow_wc_operation_data` para modificar el payload:
+Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 
     add_filter( 'fliinow_wc_operation_data', function( $data, $order ) {
         $data['travelersNumber'] = 2;
-        $data['packageName'] = 'Viaje personalizado';
+        $data['packageName'] = 'Custom trip';
         return $data;
     }, 10, 2 );
 
 == Changelog ==
 
 = 1.0.0 =
-* Versión inicial
-* Gateway de pago con soporte clásico y por bloques
-* Configuración de sandbox/producción
-* Callbacks de éxito/error
-* Soporte HPOS
+* Initial release
+* Payment gateway with classic and block-based checkout support
+* Sandbox/production configuration
+* Success/error callbacks
+* HPOS support
 
 == Screenshots ==
 
-1. Configuración del método de pago en WooCommerce → Ajustes → Pagos
-2. Método de pago visible en el checkout del cliente
+1. Payment method settings in WooCommerce → Settings → Payments
+2. Payment method visible at customer checkout
 
 == Upgrade Notice ==
 
 = 1.0.0 =
-Versión inicial.
+Initial release.
