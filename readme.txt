@@ -4,7 +4,8 @@ Tags: financing, payment, installments, travel, bnpl
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Requires Plugins: woocommerce
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -66,6 +67,12 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
     }, 10, 2 );
 
 == Changelog ==
+
+= 1.2.1 =
+* Fixed: Malformed lines in cron initialization closure
+* Fixed: .pot translation file regenerated with all strings and correct version
+* Fixed: package.json version aligned
+* Added: Requires Plugins: woocommerce header (WP 6.5+ standard)
 
 = 1.2.0 =
 * Added: LICENSE file (GPL-2.0-or-later)

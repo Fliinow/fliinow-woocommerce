@@ -1,6 +1,6 @@
 # Fliinow - Financing for WooCommerce
 
-[![PHP Tests](https://img.shields.io/badge/PHPUnit-128%20tests-brightgreen)](#testing)
+[![PHP Tests](https://img.shields.io/badge/PHPUnit-135%20tests-brightgreen)](#testing)
 [![JS Tests](https://img.shields.io/badge/Jest-17%20tests-brightgreen)](#testing)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0--9.6-purple)](https://woocommerce.com)
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue)](https://wordpress.org)

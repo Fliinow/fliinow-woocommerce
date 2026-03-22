@@ -3,7 +3,7 @@
  * Plugin Name: Fliinow - Financiación para WooCommerce
  * Plugin URI: https://api.docs.fliinow.com/
  * Description: Ofrece financiación a plazos en el checkout de WooCommerce con Fliinow. Compatible con WooCommerce Blocks.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Fliinow
  * Author URI: https://fliinow.com
  * License: GPL-2.0-or-later
@@ -13,6 +13,7 @@
  * Requires at least: 6.0
  * Tested up to: 6.7
  * Requires PHP: 7.4
+ * Requires Plugins: woocommerce
  * WC requires at least: 8.0
  * WC tested up to: 9.6
  *
@@ -21,7 +22,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FLIINOW_WC_VERSION', '1.2.0' );
+define( 'FLIINOW_WC_VERSION', '1.2.1' );
 define( 'FLIINOW_WC_PLUGIN_FILE', __FILE__ );
 define( 'FLIINOW_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLIINOW_WC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -134,9 +135,12 @@ function fliinow_wc_ajax_health_check() {
 add_action( 'init', function () {
 	if ( ! wp_next_scheduled( 'fliinow_check_pending_orders' ) ) {
 		wp_schedule_event( time(), 'hourly', 'fliinow_check_pending_orders' );
-	}	if ( ! wp_next_scheduled( 'fliinow_health_monitor' ) ) {
+	}
+
+	if ( ! wp_next_scheduled( 'fliinow_health_monitor' ) ) {
 		wp_schedule_event( time(), 'twicedaily', 'fliinow_health_monitor' );
-	}} );
+	}
+} );
 
 add_action( 'fliinow_check_pending_orders', 'fliinow_wc_check_pending_orders' );
 

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.1] - 2026-03-22
+
+### Fixed
+- Malformed lines in cron initialization closure (collapsed `if` blocks)
+- `.pot` translation file regenerated with all 51 strings and correct version
+- `package.json` version aligned to release
+
+### Added
+- `Requires Plugins: woocommerce` header (WP 6.5+ standard) in plugin file and readme.txt
+
 ## [1.2.0] - 2026-03-22
 
 ### Added

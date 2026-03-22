@@ -16,7 +16,7 @@ if ( defined( 'FLIINOW_TEST_BOOTSTRAP_LOADED' ) ) {
 define( 'FLIINOW_TEST_BOOTSTRAP_LOADED', true );
 
 define( 'ABSPATH', '/tmp/wordpress/' );
-define( 'FLIINOW_WC_VERSION', '1.2.0' );
+define( 'FLIINOW_WC_VERSION', '1.2.1' );
 define( 'FLIINOW_WC_PLUGIN_FILE', dirname( __DIR__ ) . '/fliinow-woocommerce.php' );
 define( 'FLIINOW_WC_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 define( 'FLIINOW_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/fliinow-woocommerce/' );
