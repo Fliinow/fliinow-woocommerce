@@ -34,7 +34,8 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		$api_key = $this->get_option( 'api_key' );
 		$sandbox = 'yes' === $this->get_option( 'sandbox' );
 		if ( ! empty( $api_key ) ) {
-			$this->api = new Fliinow_API( $api_key, $sandbox );
+			// 1 retry: 16s worst case — avoids lost sales on transient timeouts.
+			$this->api = new Fliinow_API( $api_key, $sandbox, 8, 1 );
 		}
 
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
@@ -372,25 +373,13 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 	}
 
 	private function get_phone_prefix( string $country_code ): string {
-		$map = array(
-			'ES' => '+34',  'PT' => '+351', 'FR' => '+33',  'IT' => '+39',
-			'DE' => '+49',  'GB' => '+44',  'US' => '+1',   'AD' => '+376',
-			'BE' => '+32',  'NL' => '+31',  'CH' => '+41',  'AT' => '+43',
-			'IE' => '+353', 'BR' => '+55',  'MX' => '+52',  'AR' => '+54',
-			'CO' => '+57',  'CL' => '+56',  'PE' => '+51',
-		);
-		return $map[ strtoupper( $country_code ) ] ?? '+34';
+		// Fliinow only supports Spanish phone numbers.
+		return '+34';
 	}
 
 	private function get_nationality_code( string $country_code ): string {
-		$map = array(
-			'ES' => 'ESP', 'PT' => 'PRT', 'FR' => 'FRA', 'IT' => 'ITA',
-			'DE' => 'DEU', 'GB' => 'GBR', 'US' => 'USA', 'AD' => 'AND',
-			'BE' => 'BEL', 'NL' => 'NLD', 'CH' => 'CHE', 'AT' => 'AUT',
-			'IE' => 'IRL', 'BR' => 'BRA', 'MX' => 'MEX', 'AR' => 'ARG',
-			'CO' => 'COL', 'CL' => 'CHL', 'PE' => 'PER',
-		);
-		return $map[ strtoupper( $country_code ) ] ?? strtoupper( $country_code );
+		// Default to Spain; API validates on their side.
+		return 'ESP';
 	}
 
 	/**

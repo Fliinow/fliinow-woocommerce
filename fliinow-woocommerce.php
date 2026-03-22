@@ -3,7 +3,7 @@
  * Plugin Name: Fliinow - Financiación para WooCommerce
  * Plugin URI: https://api.docs.fliinow.com/
  * Description: Ofrece financiación a plazos en el checkout de WooCommerce con Fliinow. Compatible con WooCommerce Blocks.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Fliinow
  * Author URI: https://fliinow.com
  * License: GPL-2.0-or-later
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FLIINOW_WC_VERSION', '1.1.0' );
+define( 'FLIINOW_WC_VERSION', '1.2.0' );
 define( 'FLIINOW_WC_PLUGIN_FILE', __FILE__ );
 define( 'FLIINOW_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLIINOW_WC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -134,8 +134,9 @@ function fliinow_wc_ajax_health_check() {
 add_action( 'init', function () {
 	if ( ! wp_next_scheduled( 'fliinow_check_pending_orders' ) ) {
 		wp_schedule_event( time(), 'hourly', 'fliinow_check_pending_orders' );
-	}
-} );
+	}	if ( ! wp_next_scheduled( 'fliinow_health_monitor' ) ) {
+		wp_schedule_event( time(), 'twicedaily', 'fliinow_health_monitor' );
+	}} );
 
 add_action( 'fliinow_check_pending_orders', 'fliinow_wc_check_pending_orders' );
 
@@ -167,20 +168,25 @@ function fliinow_wc_check_pending_orders() {
 
 	$api = $gateway->get_api()->for_background();
 
+	$stats = array( 'checked' => 0, 'completed' => 0, 'cancelled' => 0, 'errors' => 0, 'unchanged' => 0 );
+
 	foreach ( $orders as $order ) {
 		$operation_id = $order->get_meta( '_fliinow_operation_id' );
 		if ( empty( $operation_id ) ) {
 			continue;
 		}
 
+		$stats['checked']++;
 		$result = $api->get_operation_status( $operation_id );
 		if ( is_wp_error( $result ) ) {
+			$stats['errors']++;
 			continue;
 		}
 
 		$new_status = $result['status'] ?? '';
 		$old_status = $order->get_meta( '_fliinow_status' );
 		if ( $new_status === $old_status ) {
+			$stats['unchanged']++;
 			continue;
 		}
 
@@ -191,17 +197,75 @@ function fliinow_wc_check_pending_orders() {
 			$order->add_order_note(
 				sprintf( __( '[Cron] Financiación Fliinow aprobada — %s', 'fliinow-woocommerce' ), $new_status )
 			);
+			$stats['completed']++;
 		} elseif ( in_array( $new_status, array( 'REFUSED', 'EXPIRED', 'ERROR' ), true ) ) {
 			$order->set_status( 'cancelled',
 				sprintf( __( '[Cron] Financiación rechazada/expirada — %s', 'fliinow-woocommerce' ), $new_status )
 			);
+			$stats['cancelled']++;
 		}
 
 		$order->save();
 	}
+
+	// Always log cron summary (not gated by debug flag).
+	if ( function_exists( 'wc_get_logger' ) ) {
+		wc_get_logger()->info(
+			sprintf(
+				'[Cron] Polling complete — checked: %d, completed: %d, cancelled: %d, errors: %d, unchanged: %d',
+				$stats['checked'], $stats['completed'], $stats['cancelled'], $stats['errors'], $stats['unchanged']
+			),
+			array( 'source' => 'fliinow' )
+		);
+	}
 }
 
-// ─── Deactivation ─────────────────────────────────────────────────────────
+// ─── Cron: proactive health monitoring ────────────────────────────────
+add_action( 'fliinow_health_monitor', 'fliinow_wc_health_monitor' );
+
+function fliinow_wc_health_monitor() {
+	if ( ! class_exists( 'WooCommerce' ) ) {
+		return;
+	}
+
+	$settings = get_option( 'woocommerce_fliinow_settings', array() );
+	$api_key  = $settings['api_key'] ?? '';
+	if ( empty( $api_key ) || 'yes' !== ( $settings['enabled'] ?? 'no' ) ) {
+		return;
+	}
+
+	$sandbox = ( $settings['sandbox'] ?? 'yes' ) === 'yes';
+	$api     = new Fliinow_API( $api_key, $sandbox );
+	$result  = $api->health();
+
+	if ( is_wp_error( $result ) ) {
+		set_transient( 'fliinow_health_failure', $result->get_error_message(), DAY_IN_SECONDS );
+		if ( function_exists( 'wc_get_logger' ) ) {
+			wc_get_logger()->warning(
+				'[Health Monitor] API unreachable: ' . $result->get_error_message(),
+				array( 'source' => 'fliinow' )
+			);
+		}
+	} else {
+		delete_transient( 'fliinow_health_failure' );
+	}
+}
+
+// Show admin notice when proactive health check has detected a failure.
+add_action( 'admin_notices', function () {
+	$failure = get_transient( 'fliinow_health_failure' );
+	if ( empty( $failure ) || ! current_user_can( 'manage_woocommerce' ) ) {
+		return;
+	}
+	printf(
+		'<div class="notice notice-warning"><p><strong>Fliinow:</strong> %s %s</p></div>',
+		esc_html__( 'La API no responde correctamente.', 'fliinow-woocommerce' ),
+		esc_html( $failure )
+	);
+} );
+
+// ─── Deactivation ─────────────────────────────────────────────────────
 register_deactivation_hook( __FILE__, function () {
 	wp_clear_scheduled_hook( 'fliinow_check_pending_orders' );
+	wp_clear_scheduled_hook( 'fliinow_health_monitor' );
 } );

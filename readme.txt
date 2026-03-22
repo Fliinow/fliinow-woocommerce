@@ -4,7 +4,7 @@ Tags: financing, payment, installments, travel, bnpl
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,17 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 
 == Changelog ==
 
+= 1.2.0 =
+* Added: LICENSE file (GPL-2.0-or-later)
+* Added: Cron observability — summary log after each polling run
+* Added: Proactive health monitoring — twice-daily API checks with admin notice on failure
+* Added: .editorconfig for contributor consistency
+* Changed: process_payment() now retries once on transient failure (avoids lost sales)
+* Changed: Phone prefix and nationality simplified to Spanish-only
+* Fixed: uninstall.php now cleans order meta from wp_postmeta and HPOS tables
+* Fixed: Deactivation hook clears health monitor cron
+* Tests: 128 PHP unit + 17 JS = 145 total
+
 = 1.1.0 =
 * Security: callback handler now verifies real operation status via Fliinow API before acting
 * Security: orders go to on-hold (not cancelled) when status cannot be verified — cron picks them up
@@ -90,6 +101,9 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 2. Payment method visible at customer checkout
 
 == Upgrade Notice ==
+
+= 1.2.0 =
+Observability, retry resilience, proactive health monitoring. Recommended update.
 
 = 1.1.0 =
 Security hardening: callback verification, retry policy, partial refund protection. Recommended update.

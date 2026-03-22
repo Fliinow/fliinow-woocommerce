@@ -1,6 +1,6 @@
 # Fliinow - Financing for WooCommerce
 
-[![PHP Tests](https://img.shields.io/badge/PHPUnit-126%20tests-brightgreen)](#testing)
+[![PHP Tests](https://img.shields.io/badge/PHPUnit-128%20tests-brightgreen)](#testing)
 [![JS Tests](https://img.shields.io/badge/Jest-17%20tests-brightgreen)](#testing)
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-8.0--9.6-purple)](https://woocommerce.com)
 [![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue)](https://wordpress.org)
@@ -194,7 +194,7 @@ npm install
 ### Run tests
 
 ```bash
-# PHP unit tests (126 tests, 254 assertions)
+# PHP unit tests (128 tests, 257 assertions)
 vendor/bin/phpunit --testsuite=unit
 
 # Integration tests against sandbox (requires API key)
@@ -240,7 +240,7 @@ Install the plugin from GitHub Releases:
 ```bash
 # From the plugin root
 npm run build
-git archive --format=zip --prefix=fliinow-woocommerce/ -o fliinow-woocommerce-1.1.0.zip HEAD -- \
+git archive --format=zip --prefix=fliinow-woocommerce/ -o fliinow-woocommerce-1.2.0.zip HEAD -- \
   fliinow-woocommerce.php \
   includes/ \
   build/ \
@@ -248,10 +248,11 @@ git archive --format=zip --prefix=fliinow-woocommerce/ -o fliinow-woocommerce-1.
   languages/ \
   readme.txt \
   uninstall.php \
-  README.md
+  README.md \
+  LICENSE
 
 # Or with gh CLI
-gh release create v1.1.0 fliinow-woocommerce-1.1.0.zip --title "v1.1.0" --notes "Security hardening release"
+gh release create v1.2.0 fliinow-woocommerce-1.2.0.zip --title "v1.2.0" --notes "Observability, retry, health monitoring"
 ```
 
 ## API Reference

@@ -289,6 +289,8 @@ class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {
 		$order->set_meta( '_fliinow_operation_id', 'op_test_unreachable' );
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
 
+		// Gateway has 1 retry → 2 attempts total.
+		fliinow_test_mock_transport_error();
 		fliinow_test_mock_transport_error();
 
 		$_GET = array(

@@ -16,10 +16,14 @@ if ( defined( 'FLIINOW_TEST_BOOTSTRAP_LOADED' ) ) {
 define( 'FLIINOW_TEST_BOOTSTRAP_LOADED', true );
 
 define( 'ABSPATH', '/tmp/wordpress/' );
-define( 'FLIINOW_WC_VERSION', '1.0.0' );
+define( 'FLIINOW_WC_VERSION', '1.2.0' );
 define( 'FLIINOW_WC_PLUGIN_FILE', dirname( __DIR__ ) . '/fliinow-woocommerce.php' );
 define( 'FLIINOW_WC_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 define( 'FLIINOW_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/fliinow-woocommerce/' );
+
+if ( ! defined( 'DAY_IN_SECONDS' ) ) {
+	define( 'DAY_IN_SECONDS', 86400 );
+}
 
 // ── Mock registry ──────────────────────────────────────────────────────────
 
@@ -50,6 +54,8 @@ $GLOBALS['fliinow_test_mocks'] = array(
 	'log_entries'         => array(),
 	// Nonces.
 	'nonces'              => array(),
+	// Transients.
+	'transients'          => array(),
 );
 
 /**
@@ -77,6 +83,7 @@ function fliinow_test_reset_mocks(): void {
 	$GLOBALS['fliinow_test_mocks']['wp_remote_responses'] = array();
 	$GLOBALS['fliinow_test_mocks']['log_entries']          = array();
 	$GLOBALS['fliinow_test_mocks']['nonces']               = array();
+	$GLOBALS['fliinow_test_mocks']['transients']           = array();
 }
 
 // ── WP_Error class ─────────────────────────────────────────────────────────
@@ -169,6 +176,25 @@ function get_option( string $option, $default = false ) {
 
 function update_option( string $option, $value ): bool {
 	$GLOBALS['fliinow_test_mocks']['options'][ $option ] = $value;
+	return true;
+}
+
+function delete_option( string $option ): bool {
+	unset( $GLOBALS['fliinow_test_mocks']['options'][ $option ] );
+	return true;
+}
+
+function set_transient( string $key, $value, int $expiration = 0 ): bool {
+	$GLOBALS['fliinow_test_mocks']['transients'][ $key ] = $value;
+	return true;
+}
+
+function get_transient( string $key ) {
+	return $GLOBALS['fliinow_test_mocks']['transients'][ $key ] ?? false;
+}
+
+function delete_transient( string $key ): bool {
+	unset( $GLOBALS['fliinow_test_mocks']['transients'][ $key ] );
 	return true;
 }
 

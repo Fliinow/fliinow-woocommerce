@@ -240,25 +240,25 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 		$this->assertSame( '612345678', $data['client']['phone'] );
 	}
 
-	public function test_portuguese_prefix(): void {
+	public function test_portuguese_country_still_uses_spanish_prefix(): void {
 		$order = $this->create_order();
 		$order->set_data( 'billing_country', 'PT' );
-		$order->set_data( 'billing_phone', '351912345678' );
+		$order->set_data( 'billing_phone', '912345678' );
 		$data = $this->invoke_build_operation_data( $order );
 
-		$this->assertSame( '+351', $data['client']['prefix'] );
-		$this->assertSame( '912345678', $data['client']['phone'] );
+		// Always Spanish prefix — only ES phones supported.
+		$this->assertSame( '+34', $data['client']['prefix'] );
 	}
 
-	public function test_french_prefix(): void {
+	public function test_french_country_still_uses_spanish_prefix(): void {
 		$order = $this->create_order();
 		$order->set_data( 'billing_country', 'FR' );
 		$data = $this->invoke_build_operation_data( $order );
 
-		$this->assertSame( '+33', $data['client']['prefix'] );
+		$this->assertSame( '+34', $data['client']['prefix'] );
 	}
 
-	public function test_unknown_country_defaults_to_spain(): void {
+	public function test_unknown_country_uses_spanish_prefix(): void {
 		$order = $this->create_order();
 		$order->set_data( 'billing_country', 'ZZ' );
 		$data = $this->invoke_build_operation_data( $order );
@@ -306,25 +306,25 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 
 	// ── Nationality codes ──────────────────────────────────────────────────
 
-	public function test_nationality_spain(): void {
+	public function test_nationality_always_spain(): void {
 		$order = $this->create_order();
 		$order->set_data( 'billing_country', 'ES' );
 		$data = $this->invoke_build_operation_data( $order );
 		$this->assertSame( 'ESP', $data['client']['nationality'] );
 	}
 
-	public function test_nationality_portugal(): void {
+	public function test_nationality_non_spanish_country_still_returns_esp(): void {
 		$order = $this->create_order();
 		$order->set_data( 'billing_country', 'PT' );
 		$data = $this->invoke_build_operation_data( $order );
-		$this->assertSame( 'PRT', $data['client']['nationality'] );
+		$this->assertSame( 'ESP', $data['client']['nationality'] );
 	}
 
-	public function test_nationality_unknown_returns_uppercase(): void {
+	public function test_nationality_unknown_returns_esp(): void {
 		$order = $this->create_order();
 		$order->set_data( 'billing_country', 'jp' );
 		$data = $this->invoke_build_operation_data( $order );
-		$this->assertSame( 'JP', $data['client']['nationality'] );
+		$this->assertSame( 'ESP', $data['client']['nationality'] );
 	}
 
 	// ── Package name ─────────────────────────────────────────────────────
@@ -396,9 +396,7 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 		$GLOBALS['fliinow_test_mocks']['current_order'] = $order;
 		$GLOBALS['fliinow_test_mocks']['notices'] = array();
 
-		fliinow_test_mock_transport_error();
-
-		// Exhaust retries.
+		// Gateway now uses 1 retry → 2 attempts total.
 		fliinow_test_mock_transport_error();
 		fliinow_test_mock_transport_error();
 
@@ -546,6 +544,30 @@ class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {
 		// Must NOT contain nonce.
 		$this->assertStringNotContainsString( '_wpnonce', $success );
 		$this->assertStringNotContainsString( '_wpnonce', $error );
+	}
+
+	// ── Cron wiring: for_background() ─────────────────────────────────────
+
+	public function test_gateway_api_has_one_retry(): void {
+		$api = $this->gateway->get_api();
+		$this->assertNotNull( $api );
+
+		$ref = new ReflectionProperty( Fliinow_API::class, 'max_retries' );
+		$ref->setAccessible( true );
+		$this->assertSame( 1, $ref->getValue( $api ) );
+	}
+
+	public function test_gateway_api_for_background_returns_background_profile(): void {
+		$api = $this->gateway->get_api();
+		$bg  = $api->for_background();
+
+		$timeout_ref = new ReflectionProperty( Fliinow_API::class, 'timeout' );
+		$timeout_ref->setAccessible( true );
+		$retries_ref = new ReflectionProperty( Fliinow_API::class, 'max_retries' );
+		$retries_ref->setAccessible( true );
+
+		$this->assertSame( 30, $timeout_ref->getValue( $bg ) );
+		$this->assertSame( 2, $retries_ref->getValue( $bg ) );
 	}
 
 	// ── Helpers ────────────────────────────────────────────────────────────
