@@ -2,8 +2,8 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Fliinow – Checkout Financing 1.3.1\n"
-"Report-Msgid-Bugs-To: https://github.com/Fliinow/fliinow-checkout/issues\n"
+"Project-Id-Version: Fliinow – Checkout Financing 1.3.2\n"
+"Report-Msgid-Bugs-To: https://github.com/Fliinow/fliinow-checkout-financing/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,33 +12,33 @@ msgstr ""
 "POT-Creation-Date: 2026-03-22T00:00:00+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: fliinow-pot-gen 1.0\n"
-"X-Domain: fliinow-checkout\n"
+"X-Domain: fliinow-checkout-financing\n"
 
-#: fliinow-checkout.php:68
+#: fliinow-checkout-financing.php:68
 msgid "Fliinow para WooCommerce requiere que WooCommerce esté instalado y activo."
 msgstr ""
 
-#: fliinow-checkout.php:100
+#: fliinow-checkout-financing.php:100
 msgid "Ajustes"
 msgstr ""
 
-#: fliinow-checkout.php:118
+#: fliinow-checkout-financing.php:118
 msgid "API Key no configurada."
 msgstr ""
 
-#: fliinow-checkout.php:130
+#: fliinow-checkout-financing.php:130
 msgid "Conexión OK (%s)"
 msgstr ""
 
-#: fliinow-checkout.php:202
+#: fliinow-checkout-financing.php:202
 msgid "[Cron] Financiación Fliinow aprobada — %s"
 msgstr ""
 
-#: fliinow-checkout.php:207
+#: fliinow-checkout-financing.php:207
 msgid "[Cron] Financiación rechazada/expirada — %s"
 msgstr ""
 
-#: fliinow-checkout.php:268
+#: fliinow-checkout-financing.php:268
 msgid "La API no responde correctamente."
 msgstr ""
 

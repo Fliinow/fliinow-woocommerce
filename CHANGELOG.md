@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.2] - 2026-03-30
+
+### Fixed
+- Text domain changed to match WP.org assigned slug (`fliinow-checkout-financing`)
+- "Tested up to" updated to WordPress 6.9
+- Excluded `.phpcs.xml.dist` from submission ZIP (hidden files not permitted)
+- Main file renamed to `fliinow-checkout-financing.php`
+
 ## [1.3.1] - 2026-03-30
 
 ### Fixed
@@ -15,8 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 - Renamed plugin from "Fliinow - Financiación para WooCommerce" to "Fliinow – Checkout Financing" (WP.org compliance)
-- New slug/text domain: `fliinow-checkout` (was `fliinow-woocommerce`)
-- Main file renamed to `fliinow-checkout.php`
+- New slug/text domain: `fliinow-checkout-financing` (was `fliinow-woocommerce`)
+- Main file renamed to `fliinow-checkout-financing.php`
 - Plugin description now in English
 - Removed empty Screenshots section from readme.txt
 

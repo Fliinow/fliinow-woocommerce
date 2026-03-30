@@ -5,7 +5,7 @@
  * Registers Fliinow as a payment method in the block-based checkout using
  * the AbstractPaymentMethodType API.
  *
- * @package Fliinow_Checkout
+ * @package Fliinow_Checkout_Financing
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -52,8 +52,8 @@ class Fliinow_Blocks_Payment_Method extends AbstractPaymentMethodType {
 		$title = $this->get_setting( 'title' );
 		$desc  = $this->get_setting( 'description' );
 		return array(
-			'title'       => $title ? $title : __( 'Financiar con Fliinow', 'fliinow-checkout' ),
-			'description' => $desc ? $desc : __( 'Financia tu compra a plazos.', 'fliinow-checkout' ),
+			'title'       => $title ? $title : __( 'Financiar con Fliinow', 'fliinow-checkout-financing' ),
+			'description' => $desc ? $desc : __( 'Financia tu compra a plazos.', 'fliinow-checkout-financing' ),
 			'icon'        => FLIINOW_WC_PLUGIN_URL . 'assets/fliinow-logo.svg',
 			'supports'    => $this->get_supported_features(),
 			'min_amount'  => (float) ( $this->get_setting( 'min_amount' ) ? $this->get_setting( 'min_amount' ) : 60 ),
@@ -87,7 +87,7 @@ class Fliinow_Blocks_Payment_Method extends AbstractPaymentMethodType {
 		if ( function_exists( 'wp_set_script_translations' ) ) {
 			wp_set_script_translations(
 				'fliinow-blocks-integration',
-				'fliinow-checkout',
+				'fliinow-checkout-financing',
 				FLIINOW_WC_PLUGIN_DIR . 'languages'
 			);
 		}

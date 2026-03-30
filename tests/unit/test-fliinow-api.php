@@ -2,7 +2,7 @@
 /**
  * Unit tests for Fliinow_API client.
  *
- * @package Fliinow_Checkout\Tests\Unit
+ * @package Fliinow_Checkout_Financing\Tests\Unit
  */
 
 class Test_Fliinow_API extends PHPUnit\Framework\TestCase {

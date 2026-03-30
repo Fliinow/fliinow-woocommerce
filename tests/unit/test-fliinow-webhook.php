@@ -2,7 +2,7 @@
 /**
  * Unit tests for Fliinow_Webhook.
  *
- * @package Fliinow_Checkout\Tests\Unit
+ * @package Fliinow_Checkout_Financing\Tests\Unit
  */
 
 class Test_Fliinow_Webhook extends PHPUnit\Framework\TestCase {

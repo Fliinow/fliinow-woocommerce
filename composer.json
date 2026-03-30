@@ -1,5 +1,5 @@
 {
-    "name": "fliinow/fliinow-checkout",
+    "name": "fliinow/fliinow-checkout-financing",
     "description": "Fliinow checkout financing payment method for WooCommerce",
     "type": "wordpress-plugin",
     "require-dev": {

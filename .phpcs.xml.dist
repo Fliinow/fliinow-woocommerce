@@ -2,7 +2,7 @@
 <ruleset name="Fliinow Checkout">
 	<description>WordPress Coding Standards for Fliinow Checkout plugin.</description>
 
-	<file>fliinow-checkout.php</file>
+	<file>fliinow-checkout-financing.php</file>
 	<file>includes/</file>
 	<file>uninstall.php</file>
 

@@ -6,7 +6,7 @@
  * Validates callbacks via order_key (constant-time comparison).
  * Always verifies real operation status against Fliinow API before acting.
  *
- * @package Fliinow_Checkout
+ * @package Fliinow_Checkout_Financing
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -107,7 +107,7 @@ class Fliinow_Webhook {
 					$order->add_order_note(
 						sprintf(
 							/* translators: %1$s: Fliinow status, %2$s: operation ID */
-							__( 'Financiación Fliinow aprobada. Estado: %1$s. Operación: %2$s', 'fliinow-checkout' ),
+							__( 'Financiación Fliinow aprobada. Estado: %1$s. Operación: %2$s', 'fliinow-checkout-financing' ),
 							$fliinow_status,
 							$operation_id
 						)
@@ -116,14 +116,14 @@ class Fliinow_Webhook {
 					$order->set_status(
 						'on-hold',
 						/* translators: %s: Fliinow operation status */
-						sprintf( __( 'Financiación en proceso — %s', 'fliinow-checkout' ), $fliinow_status )
+						sprintf( __( 'Financiación en proceso — %s', 'fliinow-checkout-financing' ), $fliinow_status )
 					);
 				} elseif ( in_array( $fliinow_status, self::REJECTED_STATUSES, true ) ) {
 					// User was redirected to success URL but Fliinow reports rejection.
 					$order->set_status(
 						'cancelled',
 						/* translators: %s: Fliinow operation status */
-						sprintf( __( 'Financiación rechazada — %s', 'fliinow-checkout' ), $fliinow_status )
+						sprintf( __( 'Financiación rechazada — %s', 'fliinow-checkout-financing' ), $fliinow_status )
 					);
 				}
 
@@ -132,7 +132,7 @@ class Fliinow_Webhook {
 				// API check failed — put on hold so cron can verify later.
 				$gateway->log( 'Cannot verify Fliinow status for order #' . $order->get_id() . ': ' . $result->get_error_message(), 'warning' );
 				if ( $order->has_status( 'pending' ) ) {
-					$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (error de red temporal).', 'fliinow-checkout' ) );
+					$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (error de red temporal).', 'fliinow-checkout-financing' ) );
 					$order->save();
 				}
 			}
@@ -140,7 +140,7 @@ class Fliinow_Webhook {
 			// Cannot verify — hold for cron.
 			$gateway->log( 'Cannot verify Fliinow status for order #' . $order->get_id() . ': no API or operation ID', 'warning' );
 			if ( $order->has_status( 'pending' ) ) {
-				$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (sin datos de operación).', 'fliinow-checkout' ) );
+				$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (sin datos de operación).', 'fliinow-checkout-financing' ) );
 				$order->save();
 			}
 		}
@@ -174,7 +174,7 @@ class Fliinow_Webhook {
 					$order->add_order_note(
 						sprintf(
 							/* translators: %1$s: Fliinow status, %2$s: operation ID */
-							__( 'Financiación Fliinow aprobada (verificada en callback error). Estado: %1$s. Operación: %2$s', 'fliinow-checkout' ),
+							__( 'Financiación Fliinow aprobada (verificada en callback error). Estado: %1$s. Operación: %2$s', 'fliinow-checkout-financing' ),
 							$fliinow_status,
 							$operation_id
 						)
@@ -189,7 +189,7 @@ class Fliinow_Webhook {
 					$order->set_status(
 						'on-hold',
 						/* translators: %s: Fliinow operation status */
-						sprintf( __( 'Financiación en proceso — %s', 'fliinow-checkout' ), $fliinow_status )
+						sprintf( __( 'Financiación en proceso — %s', 'fliinow-checkout-financing' ), $fliinow_status )
 					);
 					$order->save();
 					wp_safe_redirect( $order->get_checkout_order_received_url() );
@@ -200,7 +200,7 @@ class Fliinow_Webhook {
 				$order->update_status(
 					'cancelled',
 					/* translators: %s: Fliinow operation status */
-					sprintf( __( 'Financiación rechazada — %s', 'fliinow-checkout' ), $fliinow_status )
+					sprintf( __( 'Financiación rechazada — %s', 'fliinow-checkout-financing' ), $fliinow_status )
 				);
 
 				foreach ( $order->get_items() as $item ) {
@@ -208,7 +208,7 @@ class Fliinow_Webhook {
 				}
 
 				wc_add_notice(
-					__( 'La financiación no se ha completado. Puedes intentarlo de nuevo o elegir otro método de pago.', 'fliinow-checkout' ),
+					__( 'La financiación no se ha completado. Puedes intentarlo de nuevo o elegir otro método de pago.', 'fliinow-checkout-financing' ),
 					'error'
 				);
 
@@ -217,7 +217,7 @@ class Fliinow_Webhook {
 			} else {
 				// API unreachable — put on hold so cron can verify later.
 				$gateway->log( 'Error callback but cannot verify Fliinow status for order #' . $order->get_id() . ': ' . $result->get_error_message(), 'warning' );
-				$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (error de red temporal).', 'fliinow-checkout' ) );
+				$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (error de red temporal).', 'fliinow-checkout-financing' ) );
 				$order->save();
 				wp_safe_redirect( $order->get_checkout_order_received_url() );
 				exit;
@@ -225,7 +225,7 @@ class Fliinow_Webhook {
 		} else {
 			// Cannot verify — hold for cron instead of cancelling blind.
 			$gateway->log( 'Error callback but cannot verify Fliinow status for order #' . $order->get_id() . ': no API or operation ID', 'warning' );
-			$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (sin datos de operación).', 'fliinow-checkout' ) );
+			$order->set_status( 'on-hold', __( 'Esperando verificación de Fliinow (sin datos de operación).', 'fliinow-checkout-financing' ) );
 			$order->save();
 			wp_safe_redirect( $order->get_checkout_order_received_url() );
 			exit;

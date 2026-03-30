@@ -4,7 +4,7 @@
  *
  * Removes all plugin data when uninstalled through WordPress admin.
  *
- * @package Fliinow_Checkout
+ * @package Fliinow_Checkout_Financing
  */
 
 // Exit if not called by WordPress uninstall process.

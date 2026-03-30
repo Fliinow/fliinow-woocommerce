@@ -3,26 +3,26 @@
  * Plugin Name: Fliinow – Checkout Financing
  * Plugin URI: https://api.docs.fliinow.com/
  * Description: Offer installment financing at your WooCommerce checkout with Fliinow. Compatible with WooCommerce Blocks.
- * Version: 1.3.1
+ * Version: 1.3.2
  * Author: Fliinow
  * Author URI: https://fliinow.com
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: fliinow-checkout
+ * Text Domain: fliinow-checkout-financing
  * Domain Path: /languages
  * Requires at least: 6.0
- * Tested up to: 6.7
+ * Tested up to: 6.9
  * Requires PHP: 7.4
  * Requires Plugins: woocommerce
  * WC requires at least: 8.0
  * WC tested up to: 9.6
  *
- * @package Fliinow_Checkout
+ * @package Fliinow_Checkout_Financing
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FLIINOW_WC_VERSION', '1.3.1' );
+define( 'FLIINOW_WC_VERSION', '1.3.2' );
 define( 'FLIINOW_WC_PLUGIN_FILE', __FILE__ );
 define( 'FLIINOW_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLIINOW_WC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -42,7 +42,7 @@ add_action(
 add_action(
 	'init',
 	function () {
-		load_plugin_textdomain( 'fliinow-checkout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+		load_plugin_textdomain( 'fliinow-checkout-financing', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 	}
 );
 
@@ -68,7 +68,7 @@ function fliinow_wc_init() {
 function fliinow_wc_missing_wc_notice() {
 	printf(
 		'<div class="notice notice-error"><p>%s</p></div>',
-		esc_html__( 'Fliinow para WooCommerce requiere que WooCommerce esté instalado y activo.', 'fliinow-checkout' )
+		esc_html__( 'Fliinow para WooCommerce requiere que WooCommerce esté instalado y activo.', 'fliinow-checkout-financing' )
 	);
 }
 
@@ -102,7 +102,7 @@ add_filter(
 		$url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=fliinow' );
 		array_unshift(
 			$links,
-			'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Ajustes', 'fliinow-checkout' ) . '</a>'
+			'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Ajustes', 'fliinow-checkout-financing' ) . '</a>'
 		);
 		return $links;
 	}
@@ -121,7 +121,7 @@ function fliinow_wc_ajax_health_check() {
 	$sandbox  = ( $settings['sandbox'] ?? 'yes' ) === 'yes';
 
 	if ( empty( $api_key ) ) {
-		wp_send_json_error( array( 'message' => __( 'API Key no configurada.', 'fliinow-checkout' ) ) );
+		wp_send_json_error( array( 'message' => __( 'API Key no configurada.', 'fliinow-checkout-financing' ) ) );
 	}
 
 	$api    = new Fliinow_API( $api_key, $sandbox );
@@ -135,7 +135,7 @@ function fliinow_wc_ajax_health_check() {
 	wp_send_json_success(
 		array(
 			/* translators: %s: environment name (sandbox or production) */
-			'message' => sprintf( __( 'Conexión OK (%s)', 'fliinow-checkout' ), $env ),
+			'message' => sprintf( __( 'Conexión OK (%s)', 'fliinow-checkout-financing' ), $env ),
 		)
 	);
 }
@@ -220,14 +220,14 @@ function fliinow_wc_check_pending_orders() {
 			$order->payment_complete( $operation_id );
 			$order->add_order_note(
 				/* translators: %s: Fliinow operation status */
-				sprintf( __( '[Cron] Financiación Fliinow aprobada — %s', 'fliinow-checkout' ), $new_status )
+				sprintf( __( '[Cron] Financiación Fliinow aprobada — %s', 'fliinow-checkout-financing' ), $new_status )
 			);
 			++$stats['completed'];
 		} elseif ( in_array( $new_status, array( 'REFUSED', 'EXPIRED', 'ERROR' ), true ) ) {
 			$order->set_status(
 				'cancelled',
 				/* translators: %s: Fliinow operation status */
-				sprintf( __( '[Cron] Financiación rechazada/expirada — %s', 'fliinow-checkout' ), $new_status )
+				sprintf( __( '[Cron] Financiación rechazada/expirada — %s', 'fliinow-checkout-financing' ), $new_status )
 			);
 			++$stats['cancelled'];
 		}
@@ -292,7 +292,7 @@ add_action(
 		}
 		printf(
 			'<div class="notice notice-warning"><p><strong>Fliinow:</strong> %s %s</p></div>',
-			esc_html__( 'La API no responde correctamente.', 'fliinow-checkout' ),
+			esc_html__( 'La API no responde correctamente.', 'fliinow-checkout-financing' ),
 			esc_html( $failure )
 		);
 	}

@@ -4,7 +4,7 @@
  * Tests the canMakePayment logic which handles WC Blocks cart totals
  * expressed in minor currency units.
  *
- * @package Fliinow_Checkout
+ * @package Fliinow_Checkout_Financing
  */
 
 // ── Mock WC Blocks globals ─────────────────────────────────────────────────

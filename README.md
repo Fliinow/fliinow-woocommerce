@@ -12,8 +12,8 @@ WooCommerce payment gateway that integrates Fliinow as an installment financing 
 ## Structure
 
 ```
-fliinow-checkout/
-├── fliinow-checkout.php           # Main plugin file
+fliinow-checkout-financing/
+├── fliinow-checkout-financing.php           # Main plugin file
 ├── uninstall.php                     # Clean-up on uninstall
 ├── includes/
 │   ├── class-fliinow-api.php         # PHP client for the Fliinow API
@@ -36,13 +36,13 @@ fliinow-checkout/
 ### 1. Copy the plugin
 
 ```bash
-cp -r fliinow-checkout /path/to/wordpress/wp-content/plugins/
+cp -r fliinow-checkout-financing /path/to/wordpress/wp-content/plugins/
 ```
 
 ### 2. Build JavaScript (required for WooCommerce Blocks)
 
 ```bash
-cd fliinow-checkout
+cd fliinow-checkout-financing
 npm install
 npm run build
 ```
@@ -215,7 +215,7 @@ Copy `phpunit.xml.dist` to `phpunit.xml` and set your sandbox API key in `FLIINO
 
 Install the plugin from GitHub Releases:
 
-1. Go to [Releases](../../releases) and download `fliinow-checkout-X.X.X.zip`
+1. Go to [Releases](../../releases) and download `fliinow-checkout-financing-X.X.X.zip`
 2. In WordPress: **Plugins → Add New → Upload Plugin** → select the ZIP
 3. Activate and configure at **WooCommerce → Settings → Payments → Fliinow**
 
@@ -226,11 +226,11 @@ Install the plugin from GitHub Releases:
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/Fliinow/fliinow-checkout"
+      "url": "https://github.com/Fliinow/fliinow-checkout-financing"
     }
   ],
   "require": {
-    "fliinow/fliinow-checkout": "^1.0"
+    "fliinow/fliinow-checkout-financing": "^1.0"
   }
 }
 ```
@@ -240,8 +240,8 @@ Install the plugin from GitHub Releases:
 ```bash
 # From the plugin root
 npm run build
-git archive --format=zip --prefix=fliinow-checkout/ -o fliinow-checkout-1.3.0.zip HEAD -- \
-  fliinow-checkout.php \
+git archive --format=zip --prefix=fliinow-checkout-financing/ -o fliinow-checkout-financing-1.3.0.zip HEAD -- \
+  fliinow-checkout-financing.php \
   includes/ \
   build/ \
   assets/ \
@@ -252,7 +252,7 @@ git archive --format=zip --prefix=fliinow-checkout/ -o fliinow-checkout-1.3.0.zi
   LICENSE
 
 # Or with gh CLI
-gh release create v1.3.0 fliinow-checkout-1.3.0.zip --title "v1.3.0" --notes "Rename plugin for WP.org compliance"
+gh release create v1.3.0 fliinow-checkout-financing-1.3.0.zip --title "v1.3.0" --notes "Rename plugin for WP.org compliance"
 ```
 
 ## API Reference

@@ -6,7 +6,7 @@
  * They require FLIINOW_TEST_API_KEY to be set (configured in phpunit.xml).
  *
  * @group integration
- * @package Fliinow_Checkout\Tests\Integration
+ * @package Fliinow_Checkout_Financing\Tests\Integration
  */
 
 class Test_Fliinow_Integration extends PHPUnit\Framework\TestCase {
@@ -216,7 +216,7 @@ class Test_Fliinow_Integration extends PHPUnit\Framework\TestCase {
 			'X-Fliinow-API-Key: ' . $this->api_key,
 			'Content-Type: application/json',
 			'Accept: application/json',
-			'User-Agent: FliinowCheckout/' . FLIINOW_WC_VERSION . ' PHPUnit/Integration',
+			'User-Agent: FliinowCheckoutFinancing/' . FLIINOW_WC_VERSION . ' PHPUnit/Integration',
 		);
 
 		curl_setopt_array( $ch, array(

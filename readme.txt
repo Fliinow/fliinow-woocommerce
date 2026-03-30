@@ -2,10 +2,10 @@
 Contributors: fliinow
 Tags: financing, payment, installments, travel, bnpl
 Requires at least: 6.0
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,7 +40,7 @@ the block-based checkout (WooCommerce Blocks).
 
 == Installation ==
 
-1. Upload the `fliinow-checkout` folder to `/wp-content/plugins/`
+1. Upload the `fliinow-checkout-financing` folder to `/wp-content/plugins/`
 2. Activate the plugin from the 'Plugins' menu in WordPress
 3. Go to WooCommerce → Settings → Payments → Fliinow
 4. Enter your API Key provided by Fliinow
@@ -68,6 +68,12 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 
 == Changelog ==
 
+= 1.3.2 =
+* Fixed: Text domain changed to match WP.org assigned slug (fliinow-checkout-financing)
+* Fixed: "Tested up to" updated to WordPress 6.9
+* Fixed: Excluded .phpcs.xml.dist from submission ZIP (hidden files not permitted)
+* Changed: Main file renamed to fliinow-checkout-financing.php
+
 = 1.3.1 =
 * Fixed: WordPress Plugin Check (WPCS) compliance — all coding standards issues resolved
 * Added: .phpcs.xml.dist for reproducible linting
@@ -75,7 +81,7 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
 
 = 1.3.0 =
 * Changed: Renamed plugin to "Fliinow – Checkout Financing" (WP.org naming compliance)
-* Changed: New slug and text domain: fliinow-checkout
+* Changed: New slug and text domain: fliinow-checkout-financing
 * Changed: Plugin description in English
 
 = 1.2.1 =

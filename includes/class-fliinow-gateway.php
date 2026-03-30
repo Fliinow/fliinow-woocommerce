@@ -5,7 +5,7 @@
  * Extends WC_Payment_Gateway to add Fliinow financing as a checkout option.
  * Handles operation creation, redirects, refunds, and admin configuration.
  *
- * @package Fliinow_Checkout
+ * @package Fliinow_Checkout_Financing
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -19,9 +19,9 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		$this->id                 = 'fliinow';
 		$this->icon               = FLIINOW_WC_PLUGIN_URL . 'assets/fliinow-logo.svg';
 		$this->has_fields         = false;
-		$this->method_title       = __( 'Fliinow - Financiación', 'fliinow-checkout' );
-		$this->method_description = __( 'Permite a tus clientes financiar sus compras a plazos con Fliinow.', 'fliinow-checkout' );
-		$this->order_button_text  = __( 'Financiar con Fliinow', 'fliinow-checkout' );
+		$this->method_title       = __( 'Fliinow - Financiación', 'fliinow-checkout-financing' );
+		$this->method_description = __( 'Permite a tus clientes financiar sus compras a plazos con Fliinow.', 'fliinow-checkout-financing' );
+		$this->order_button_text  = __( 'Financiar con Fliinow', 'fliinow-checkout-financing' );
 		$this->supports           = array( 'products', 'refunds' );
 
 		$this->init_form_fields();
@@ -47,50 +47,50 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 	public function init_form_fields() {
 		$this->form_fields = array(
 			'enabled'        => array(
-				'title'   => __( 'Activar/Desactivar', 'fliinow-checkout' ),
+				'title'   => __( 'Activar/Desactivar', 'fliinow-checkout-financing' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Activar financiación con Fliinow', 'fliinow-checkout' ),
+				'label'   => __( 'Activar financiación con Fliinow', 'fliinow-checkout-financing' ),
 				'default' => 'no',
 			),
 			'title'          => array(
-				'title'       => __( 'Título', 'fliinow-checkout' ),
+				'title'       => __( 'Título', 'fliinow-checkout-financing' ),
 				'type'        => 'text',
-				'description' => __( 'Nombre que verá el cliente en el checkout.', 'fliinow-checkout' ),
-				'default'     => __( 'Financiar con Fliinow', 'fliinow-checkout' ),
+				'description' => __( 'Nombre que verá el cliente en el checkout.', 'fliinow-checkout-financing' ),
+				'default'     => __( 'Financiar con Fliinow', 'fliinow-checkout-financing' ),
 				'desc_tip'    => true,
 			),
 			'description'    => array(
-				'title'       => __( 'Descripción', 'fliinow-checkout' ),
+				'title'       => __( 'Descripción', 'fliinow-checkout-financing' ),
 				'type'        => 'textarea',
-				'description' => __( 'Descripción que verá el cliente en el checkout.', 'fliinow-checkout' ),
-				'default'     => __( 'Financia tu compra a plazos. Serás redirigido a Fliinow para completar la solicitud de financiación.', 'fliinow-checkout' ),
+				'description' => __( 'Descripción que verá el cliente en el checkout.', 'fliinow-checkout-financing' ),
+				'default'     => __( 'Financia tu compra a plazos. Serás redirigido a Fliinow para completar la solicitud de financiación.', 'fliinow-checkout-financing' ),
 				'desc_tip'    => true,
 			),
 			'api_key'        => array(
-				'title'       => __( 'API Key', 'fliinow-checkout' ),
+				'title'       => __( 'API Key', 'fliinow-checkout-financing' ),
 				'type'        => 'password',
-				'description' => __( 'Claves sandbox: fk_test_*   Producción: fk_live_*', 'fliinow-checkout' ),
+				'description' => __( 'Claves sandbox: fk_test_*   Producción: fk_live_*', 'fliinow-checkout-financing' ),
 				'default'     => '',
 				'desc_tip'    => true,
 			),
 			'sandbox'        => array(
-				'title'       => __( 'Modo Sandbox', 'fliinow-checkout' ),
+				'title'       => __( 'Modo Sandbox', 'fliinow-checkout-financing' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Activar entorno de pruebas (demo.fliinow.com)', 'fliinow-checkout' ),
+				'label'       => __( 'Activar entorno de pruebas (demo.fliinow.com)', 'fliinow-checkout-financing' ),
 				'default'     => 'yes',
-				'description' => __( 'Desactiva para producción (app.fliinow.com).', 'fliinow-checkout' ),
+				'description' => __( 'Desactiva para producción (app.fliinow.com).', 'fliinow-checkout-financing' ),
 			),
 			'health_check'   => array(
-				'title'       => __( 'Verificar conexión', 'fliinow-checkout' ),
+				'title'       => __( 'Verificar conexión', 'fliinow-checkout-financing' ),
 				'type'        => 'title',
 				'description' => '<button type="button" class="button" id="fliinow-health-check">'
-					. esc_html__( 'Probar conexión API', 'fliinow-checkout' )
+					. esc_html__( 'Probar conexión API', 'fliinow-checkout-financing' )
 					. '</button> <span id="fliinow-health-result"></span>',
 			),
 			'min_amount'     => array(
-				'title'             => __( 'Importe mínimo (€)', 'fliinow-checkout' ),
+				'title'             => __( 'Importe mínimo (€)', 'fliinow-checkout-financing' ),
 				'type'              => 'number',
-				'description'       => __( 'Importe mínimo del carrito para mostrar la opción.', 'fliinow-checkout' ),
+				'description'       => __( 'Importe mínimo del carrito para mostrar la opción.', 'fliinow-checkout-financing' ),
 				'default'           => '60',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
@@ -99,9 +99,9 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 				),
 			),
 			'max_amount'     => array(
-				'title'             => __( 'Importe máximo (€)', 'fliinow-checkout' ),
+				'title'             => __( 'Importe máximo (€)', 'fliinow-checkout-financing' ),
 				'type'              => 'number',
-				'description'       => __( '0 = sin límite.', 'fliinow-checkout' ),
+				'description'       => __( '0 = sin límite.', 'fliinow-checkout-financing' ),
 				'default'           => '0',
 				'desc_tip'          => true,
 				'custom_attributes' => array(
@@ -110,17 +110,17 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 				),
 			),
 			'package_travel' => array(
-				'title'   => __( 'Viaje combinado', 'fliinow-checkout' ),
+				'title'   => __( 'Viaje combinado', 'fliinow-checkout-financing' ),
 				'type'    => 'checkbox',
-				'label'   => __( 'Marcar como viaje combinado (EU Package Travel Directive)', 'fliinow-checkout' ),
+				'label'   => __( 'Marcar como viaje combinado (EU Package Travel Directive)', 'fliinow-checkout-financing' ),
 				'default' => 'yes',
 			),
 			'debug'          => array(
-				'title'       => __( 'Log de depuración', 'fliinow-checkout' ),
+				'title'       => __( 'Log de depuración', 'fliinow-checkout-financing' ),
 				'type'        => 'checkbox',
-				'label'       => __( 'Activar logs', 'fliinow-checkout' ),
+				'label'       => __( 'Activar logs', 'fliinow-checkout-financing' ),
 				'default'     => 'no',
-				'description' => __( 'WooCommerce → Estado → Logs (fuente: fliinow).', 'fliinow-checkout' ),
+				'description' => __( 'WooCommerce → Estado → Logs (fuente: fliinow).', 'fliinow-checkout-financing' ),
 			),
 		);
 	}
@@ -201,13 +201,13 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		$order = wc_get_order( $order_id );
 
 		if ( ! $order ) {
-			wc_add_notice( __( 'Error al procesar el pedido.', 'fliinow-checkout' ), 'error' );
+			wc_add_notice( __( 'Error al procesar el pedido.', 'fliinow-checkout-financing' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 
 		if ( ! $this->api ) {
 			$this->log( 'API not initialized — missing API key', 'error' );
-			wc_add_notice( __( 'Fliinow no está configurado correctamente.', 'fliinow-checkout' ), 'error' );
+			wc_add_notice( __( 'Fliinow no está configurado correctamente.', 'fliinow-checkout-financing' ), 'error' );
 			return array( 'result' => 'failure' );
 		}
 
@@ -230,7 +230,7 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		if ( is_wp_error( $result ) ) {
 			$this->log( 'API error: ' . $result->get_error_message(), 'error' );
 			wc_add_notice(
-				__( 'No se pudo iniciar la financiación. Por favor, inténtalo de nuevo.', 'fliinow-checkout' ),
+				__( 'No se pudo iniciar la financiación. Por favor, inténtalo de nuevo.', 'fliinow-checkout-financing' ),
 				'error'
 			);
 			return array( 'result' => 'failure' );
@@ -239,7 +239,7 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		if ( empty( $result['financingUrl'] ) || empty( $result['id'] ) ) {
 			$this->log( 'Invalid API response — missing financingUrl or id: ' . wp_json_encode( $result ), 'error' );
 			wc_add_notice(
-				__( 'Error inesperado al conectar con Fliinow.', 'fliinow-checkout' ),
+				__( 'Error inesperado al conectar con Fliinow.', 'fliinow-checkout-financing' ),
 				'error'
 			);
 			return array( 'result' => 'failure' );
@@ -248,7 +248,7 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		$order->update_meta_data( '_fliinow_operation_id', sanitize_text_field( $result['id'] ) );
 		$order->update_meta_data( '_fliinow_financing_url', esc_url_raw( $result['financingUrl'] ) );
 		$order->update_meta_data( '_fliinow_status', sanitize_text_field( $result['status'] ?? 'GENERATED' ) );
-		$order->set_status( 'pending', __( 'Esperando financiación de Fliinow.', 'fliinow-checkout' ) );
+		$order->set_status( 'pending', __( 'Esperando financiación de Fliinow.', 'fliinow-checkout-financing' ) );
 		$order->save();
 
 		$this->log( 'Operation created: ' . $result['id'] . ' → redirecting customer' );
@@ -264,21 +264,21 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		$order = wc_get_order( $order_id );
 		if ( ! $order ) {
-			return new WP_Error( 'fliinow_refund_error', __( 'Pedido no encontrado.', 'fliinow-checkout' ) );
+			return new WP_Error( 'fliinow_refund_error', __( 'Pedido no encontrado.', 'fliinow-checkout-financing' ) );
 		}
 
 		if ( ! $this->api ) {
-			return new WP_Error( 'fliinow_refund_error', __( 'Fliinow no está configurado.', 'fliinow-checkout' ) );
+			return new WP_Error( 'fliinow_refund_error', __( 'Fliinow no está configurado.', 'fliinow-checkout-financing' ) );
 		}
 
 		// Fliinow only supports full cancellation — reject partial refunds.
 		if ( null !== $amount && round( (float) $amount, 2 ) < round( (float) $order->get_total(), 2 ) ) {
-			return new WP_Error( 'fliinow_refund_error', __( 'Fliinow no soporta reembolsos parciales. Solo se puede cancelar la operación completa.', 'fliinow-checkout' ) );
+			return new WP_Error( 'fliinow_refund_error', __( 'Fliinow no soporta reembolsos parciales. Solo se puede cancelar la operación completa.', 'fliinow-checkout-financing' ) );
 		}
 
 		$operation_id = $order->get_meta( '_fliinow_operation_id' );
 		if ( empty( $operation_id ) ) {
-			return new WP_Error( 'fliinow_refund_error', __( 'No se encontró la operación de Fliinow asociada.', 'fliinow-checkout' ) );
+			return new WP_Error( 'fliinow_refund_error', __( 'No se encontró la operación de Fliinow asociada.', 'fliinow-checkout-financing' ) );
 		}
 
 		$result = $this->api->cancel_operation( $operation_id, $reason );
@@ -326,7 +326,7 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		$package_name = ! empty( $items_desc )
 			? mb_substr( implode( ', ', $items_desc ), 0, 200 )
 			/* translators: %s: order ID */
-			: sprintf( __( 'Pedido #%s', 'fliinow-checkout' ), $order->get_id() );
+			: sprintf( __( 'Pedido #%s', 'fliinow-checkout-financing' ), $order->get_id() );
 
 		$data = array(
 			'externalId'         => (string) $order->get_id(),
