@@ -3,7 +3,7 @@
  * Plugin Name: Fliinow – Checkout Financing
  * Plugin URI: https://api.docs.fliinow.com/
  * Description: Offer installment financing at your WooCommerce checkout with Fliinow. Compatible with WooCommerce Blocks.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Fliinow
  * Author URI: https://fliinow.com
  * License: GPL-2.0-or-later
@@ -22,7 +22,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FLIINOW_WC_VERSION', '1.3.0' );
+define( 'FLIINOW_WC_VERSION', '1.3.1' );
 define( 'FLIINOW_WC_PLUGIN_FILE', __FILE__ );
 define( 'FLIINOW_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLIINOW_WC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -39,9 +39,12 @@ add_action(
 );
 
 // ─── Load text domain ──────────────────────────────────────────────────────
-add_action( 'init', function () {
-	load_plugin_textdomain( 'fliinow-checkout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
-} );
+add_action(
+	'init',
+	function () {
+		load_plugin_textdomain( 'fliinow-checkout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	}
+);
 
 // ─── Core init ─────────────────────────────────────────────────────────────
 add_action( 'plugins_loaded', 'fliinow_wc_init' );
@@ -82,7 +85,7 @@ function fliinow_wc_blocks_support() {
 		return;
 	}
 
-	require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-blocks.php';
+	require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-blocks-payment-method.php';
 
 	add_action(
 		'woocommerce_blocks_payment_method_type_registration',
@@ -93,14 +96,17 @@ function fliinow_wc_blocks_support() {
 }
 
 // ─── Plugin action links ──────────────────────────────────────────────────
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( array $links ): array {
-	$url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=fliinow' );
-	array_unshift(
-		$links,
-		'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Ajustes', 'fliinow-checkout' ) . '</a>'
-	);
-	return $links;
-} );
+add_filter(
+	'plugin_action_links_' . plugin_basename( __FILE__ ),
+	function ( array $links ): array {
+		$url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=fliinow' );
+		array_unshift(
+			$links,
+			'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Ajustes', 'fliinow-checkout' ) . '</a>'
+		);
+		return $links;
+	}
+);
 
 // ─── Admin AJAX: health-check ─────────────────────────────────────────────
 function fliinow_wc_ajax_health_check() {
@@ -126,21 +132,27 @@ function fliinow_wc_ajax_health_check() {
 	}
 
 	$env = $sandbox ? 'sandbox' : 'production';
-	wp_send_json_success( array(
-		'message' => sprintf( __( 'Conexión OK (%s)', 'fliinow-checkout' ), $env ),
-	) );
+	wp_send_json_success(
+		array(
+			/* translators: %s: environment name (sandbox or production) */
+			'message' => sprintf( __( 'Conexión OK (%s)', 'fliinow-checkout' ), $env ),
+		)
+	);
 }
 
 // ─── Cron: status polling for pending/on-hold orders ──────────────────────
-add_action( 'init', function () {
-	if ( ! wp_next_scheduled( 'fliinow_check_pending_orders' ) ) {
-		wp_schedule_event( time(), 'hourly', 'fliinow_check_pending_orders' );
-	}
+add_action(
+	'init',
+	function () {
+		if ( ! wp_next_scheduled( 'fliinow_check_pending_orders' ) ) {
+			wp_schedule_event( time(), 'hourly', 'fliinow_check_pending_orders' );
+		}
 
-	if ( ! wp_next_scheduled( 'fliinow_health_monitor' ) ) {
-		wp_schedule_event( time(), 'twicedaily', 'fliinow_health_monitor' );
+		if ( ! wp_next_scheduled( 'fliinow_health_monitor' ) ) {
+			wp_schedule_event( time(), 'twicedaily', 'fliinow_health_monitor' );
+		}
 	}
-} );
+);
 
 add_action( 'fliinow_check_pending_orders', 'fliinow_wc_check_pending_orders' );
 
@@ -149,16 +161,18 @@ function fliinow_wc_check_pending_orders() {
 		return;
 	}
 
-	$orders = wc_get_orders( array(
-		'status'         => array( 'pending', 'on-hold' ),
-		'payment_method' => 'fliinow',
-		'limit'          => 50,
-		'date_created'   => '>' . gmdate( 'Y-m-d', strtotime( '-7 days' ) ),
-		'meta_key'       => '_fliinow_operation_id',
-		'meta_compare'   => 'EXISTS',
-		'orderby'        => 'date',
-		'order'          => 'ASC',
-	) );
+	$orders = wc_get_orders(
+		array(
+			'status'         => array( 'pending', 'on-hold' ),
+			'payment_method' => 'fliinow',
+			'limit'          => 50,
+			'date_created'   => '>' . gmdate( 'Y-m-d', strtotime( '-7 days' ) ),
+			'meta_key'       => '_fliinow_operation_id',
+			'meta_compare'   => 'EXISTS',
+			'orderby'        => 'date',
+			'order'          => 'ASC',
+		)
+	);
 
 	if ( empty( $orders ) ) {
 		return;
@@ -172,7 +186,13 @@ function fliinow_wc_check_pending_orders() {
 
 	$api = $gateway->get_api()->for_background();
 
-	$stats = array( 'checked' => 0, 'completed' => 0, 'cancelled' => 0, 'errors' => 0, 'unchanged' => 0 );
+	$stats = array(
+		'checked'   => 0,
+		'completed' => 0,
+		'cancelled' => 0,
+		'errors'    => 0,
+		'unchanged' => 0,
+	);
 
 	foreach ( $orders as $order ) {
 		$operation_id = $order->get_meta( '_fliinow_operation_id' );
@@ -180,17 +200,17 @@ function fliinow_wc_check_pending_orders() {
 			continue;
 		}
 
-		$stats['checked']++;
+		++$stats['checked'];
 		$result = $api->get_operation_status( $operation_id );
 		if ( is_wp_error( $result ) ) {
-			$stats['errors']++;
+			++$stats['errors'];
 			continue;
 		}
 
 		$new_status = $result['status'] ?? '';
 		$old_status = $order->get_meta( '_fliinow_status' );
 		if ( $new_status === $old_status ) {
-			$stats['unchanged']++;
+			++$stats['unchanged'];
 			continue;
 		}
 
@@ -199,14 +219,17 @@ function fliinow_wc_check_pending_orders() {
 		if ( in_array( $new_status, array( 'FAVORABLE', 'CONFIRMED', 'FINISHED' ), true ) ) {
 			$order->payment_complete( $operation_id );
 			$order->add_order_note(
+				/* translators: %s: Fliinow operation status */
 				sprintf( __( '[Cron] Financiación Fliinow aprobada — %s', 'fliinow-checkout' ), $new_status )
 			);
-			$stats['completed']++;
+			++$stats['completed'];
 		} elseif ( in_array( $new_status, array( 'REFUSED', 'EXPIRED', 'ERROR' ), true ) ) {
-			$order->set_status( 'cancelled',
+			$order->set_status(
+				'cancelled',
+				/* translators: %s: Fliinow operation status */
 				sprintf( __( '[Cron] Financiación rechazada/expirada — %s', 'fliinow-checkout' ), $new_status )
 			);
-			$stats['cancelled']++;
+			++$stats['cancelled'];
 		}
 
 		$order->save();
@@ -217,7 +240,11 @@ function fliinow_wc_check_pending_orders() {
 		wc_get_logger()->info(
 			sprintf(
 				'[Cron] Polling complete — checked: %d, completed: %d, cancelled: %d, errors: %d, unchanged: %d',
-				$stats['checked'], $stats['completed'], $stats['cancelled'], $stats['errors'], $stats['unchanged']
+				$stats['checked'],
+				$stats['completed'],
+				$stats['cancelled'],
+				$stats['errors'],
+				$stats['unchanged']
 			),
 			array( 'source' => 'fliinow' )
 		);
@@ -256,20 +283,26 @@ function fliinow_wc_health_monitor() {
 }
 
 // Show admin notice when proactive health check has detected a failure.
-add_action( 'admin_notices', function () {
-	$failure = get_transient( 'fliinow_health_failure' );
-	if ( empty( $failure ) || ! current_user_can( 'manage_woocommerce' ) ) {
-		return;
+add_action(
+	'admin_notices',
+	function () {
+		$failure = get_transient( 'fliinow_health_failure' );
+		if ( empty( $failure ) || ! current_user_can( 'manage_woocommerce' ) ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-warning"><p><strong>Fliinow:</strong> %s %s</p></div>',
+			esc_html__( 'La API no responde correctamente.', 'fliinow-checkout' ),
+			esc_html( $failure )
+		);
 	}
-	printf(
-		'<div class="notice notice-warning"><p><strong>Fliinow:</strong> %s %s</p></div>',
-		esc_html__( 'La API no responde correctamente.', 'fliinow-checkout' ),
-		esc_html( $failure )
-	);
-} );
+);
 
 // ─── Deactivation ─────────────────────────────────────────────────────
-register_deactivation_hook( __FILE__, function () {
-	wp_clear_scheduled_hook( 'fliinow_check_pending_orders' );
-	wp_clear_scheduled_hook( 'fliinow_health_monitor' );
-} );
+register_deactivation_hook(
+	__FILE__,
+	function () {
+		wp_clear_scheduled_hook( 'fliinow_check_pending_orders' );
+		wp_clear_scheduled_hook( 'fliinow_health_monitor' );
+	}
+);

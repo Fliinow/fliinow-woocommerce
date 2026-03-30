@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.3.1] - 2026-03-30
+
+### Fixed
+- WordPress Plugin Check (WPCS) compliance — fixed all coding standards issues
+- Added `.phpcs.xml.dist` for reproducible linting
+- Renamed `class-fliinow-blocks.php` to `class-fliinow-blocks-payment-method.php` (WPCS filename convention)
+
 ## [1.3.0] - 2025-07-24
 
 ### Changed

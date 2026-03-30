@@ -49,13 +49,15 @@ class Fliinow_Blocks_Payment_Method extends AbstractPaymentMethodType {
 	}
 
 	public function get_payment_method_data() {
+		$title = $this->get_setting( 'title' );
+		$desc  = $this->get_setting( 'description' );
 		return array(
-			'title'       => $this->get_setting( 'title' ) ?: __( 'Financiar con Fliinow', 'fliinow-checkout' ),
-			'description' => $this->get_setting( 'description' ) ?: __( 'Financia tu compra a plazos.', 'fliinow-checkout' ),
+			'title'       => $title ? $title : __( 'Financiar con Fliinow', 'fliinow-checkout' ),
+			'description' => $desc ? $desc : __( 'Financia tu compra a plazos.', 'fliinow-checkout' ),
 			'icon'        => FLIINOW_WC_PLUGIN_URL . 'assets/fliinow-logo.svg',
 			'supports'    => $this->get_supported_features(),
-			'min_amount'  => (float) ( $this->get_setting( 'min_amount' ) ?: 60 ),
-			'max_amount'  => (float) ( $this->get_setting( 'max_amount' ) ?: 0 ),
+			'min_amount'  => (float) ( $this->get_setting( 'min_amount' ) ? $this->get_setting( 'min_amount' ) : 60 ),
+			'max_amount'  => (float) ( $this->get_setting( 'max_amount' ) ? $this->get_setting( 'max_amount' ) : 0 ),
 		);
 	}
 

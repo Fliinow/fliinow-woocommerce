@@ -106,18 +106,23 @@ class Fliinow_Webhook {
 					$order->payment_complete( $operation_id );
 					$order->add_order_note(
 						sprintf(
+							/* translators: %1$s: Fliinow status, %2$s: operation ID */
 							__( 'Financiación Fliinow aprobada. Estado: %1$s. Operación: %2$s', 'fliinow-checkout' ),
 							$fliinow_status,
 							$operation_id
 						)
 					);
 				} elseif ( in_array( $fliinow_status, self::PENDING_STATUSES, true ) ) {
-					$order->set_status( 'on-hold',
+					$order->set_status(
+						'on-hold',
+						/* translators: %s: Fliinow operation status */
 						sprintf( __( 'Financiación en proceso — %s', 'fliinow-checkout' ), $fliinow_status )
 					);
 				} elseif ( in_array( $fliinow_status, self::REJECTED_STATUSES, true ) ) {
 					// User was redirected to success URL but Fliinow reports rejection.
-					$order->set_status( 'cancelled',
+					$order->set_status(
+						'cancelled',
+						/* translators: %s: Fliinow operation status */
 						sprintf( __( 'Financiación rechazada — %s', 'fliinow-checkout' ), $fliinow_status )
 					);
 				}
@@ -168,6 +173,7 @@ class Fliinow_Webhook {
 					$order->payment_complete( $operation_id );
 					$order->add_order_note(
 						sprintf(
+							/* translators: %1$s: Fliinow status, %2$s: operation ID */
 							__( 'Financiación Fliinow aprobada (verificada en callback error). Estado: %1$s. Operación: %2$s', 'fliinow-checkout' ),
 							$fliinow_status,
 							$operation_id
@@ -180,7 +186,9 @@ class Fliinow_Webhook {
 
 				if ( in_array( $fliinow_status, self::PENDING_STATUSES, true ) ) {
 					$gateway->log( 'Error callback but Fliinow reports PENDING — holding order #' . $order->get_id() );
-					$order->set_status( 'on-hold',
+					$order->set_status(
+						'on-hold',
+						/* translators: %s: Fliinow operation status */
 						sprintf( __( 'Financiación en proceso — %s', 'fliinow-checkout' ), $fliinow_status )
 					);
 					$order->save();
@@ -191,11 +199,12 @@ class Fliinow_Webhook {
 				$gateway->log( 'Error callback — Fliinow confirms REJECTED (' . $fliinow_status . ') for order #' . $order->get_id() );
 				$order->update_status(
 					'cancelled',
+					/* translators: %s: Fliinow operation status */
 					sprintf( __( 'Financiación rechazada — %s', 'fliinow-checkout' ), $fliinow_status )
 				);
 
 				foreach ( $order->get_items() as $item ) {
-					WC()->cart->add_to_cart( $item->get_product_id(), $item->get_quantity(), $item->get_variation_id(), $item->get_meta( '_variation_attributes', true ) ?: array() );
+					WC()->cart->add_to_cart( $item->get_product_id(), $item->get_quantity(), $item->get_variation_id(), $item->get_meta( '_variation_attributes', true ) ? $item->get_meta( '_variation_attributes', true ) : array() );
 				}
 
 				wc_add_notice(

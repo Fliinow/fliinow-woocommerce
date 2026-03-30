@@ -5,7 +5,7 @@ Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 7.4
 Requires Plugins: woocommerce
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ Yes. Use the `fliinow_wc_operation_data` filter to modify the payload:
     }, 10, 2 );
 
 == Changelog ==
+
+= 1.3.1 =
+* Fixed: WordPress Plugin Check (WPCS) compliance — all coding standards issues resolved
+* Added: .phpcs.xml.dist for reproducible linting
+* Changed: Blocks class filename convention (WPCS)
 
 = 1.3.0 =
 * Changed: Renamed plugin to "Fliinow – Checkout Financing" (WP.org naming compliance)

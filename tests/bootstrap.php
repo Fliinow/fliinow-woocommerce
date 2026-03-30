@@ -16,7 +16,7 @@ if ( defined( 'FLIINOW_TEST_BOOTSTRAP_LOADED' ) ) {
 define( 'FLIINOW_TEST_BOOTSTRAP_LOADED', true );
 
 define( 'ABSPATH', '/tmp/wordpress/' );
-define( 'FLIINOW_WC_VERSION', '1.3.0' );
+define( 'FLIINOW_WC_VERSION', '1.3.1' );
 define( 'FLIINOW_WC_PLUGIN_FILE', dirname( __DIR__ ) . '/fliinow-checkout.php' );
 define( 'FLIINOW_WC_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
 define( 'FLIINOW_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/fliinow-checkout/' );
@@ -707,4 +707,4 @@ require_once __DIR__ . '/mock-namespaces.php';
 require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-api.php';
 require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-gateway.php';
 require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-webhook.php';
-require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-blocks.php';
+require_once FLIINOW_WC_PLUGIN_DIR . 'includes/class-fliinow-blocks-payment-method.php';

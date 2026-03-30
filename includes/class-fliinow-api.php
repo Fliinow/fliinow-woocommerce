@@ -51,7 +51,7 @@ class Fliinow_API {
 	 * Higher timeout (30 s) and up to 2 retries — acceptable in non-user-facing context.
 	 */
 	public function for_background(): self {
-		$clone = clone $this;
+		$clone              = clone $this;
 		$clone->timeout     = 30;
 		$clone->max_retries = 2;
 		return $clone;
@@ -109,7 +109,7 @@ class Fliinow_API {
 			'sslverify' => true,
 		);
 
-		if ( $body !== null ) {
+		if ( null !== $body ) {
 			$encoded = wp_json_encode( $body );
 			if ( false === $encoded ) {
 				return new WP_Error( 'fliinow_json_encode', 'Failed to encode request body to JSON.' );
@@ -142,7 +142,7 @@ class Fliinow_API {
 			if ( in_array( $status_code, array( 502, 503, 504 ), true ) && $attempt < $attempts ) {
 				$this->log_debug( sprintf( 'HTTP %d — retrying…', $status_code ) );
 				$retry_after = (int) wp_remote_retrieve_header( $response, 'retry-after' );
-				$wait = min( max( $retry_after, self::RETRY_DELAY_SEC * $attempt ), self::MAX_RETRY_WAIT );
+				$wait        = min( max( $retry_after, self::RETRY_DELAY_SEC * $attempt ), self::MAX_RETRY_WAIT );
 				sleep( $wait );
 				continue;
 			}
@@ -178,7 +178,10 @@ class Fliinow_API {
 			return new WP_Error(
 				'fliinow_json_decode',
 				'Invalid JSON response from Fliinow API.',
-				array( 'status_code' => $status_code, 'body' => mb_substr( $body_raw, 0, 500 ) )
+				array(
+					'status_code' => $status_code,
+					'body'        => mb_substr( $body_raw, 0, 500 ),
+				)
 			);
 		}
 

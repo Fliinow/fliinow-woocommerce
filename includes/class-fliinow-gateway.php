@@ -93,7 +93,10 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 				'description'       => __( 'Importe mínimo del carrito para mostrar la opción.', 'fliinow-checkout' ),
 				'default'           => '60',
 				'desc_tip'          => true,
-				'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ),
+				'custom_attributes' => array(
+					'min'  => '0',
+					'step' => '0.01',
+				),
 			),
 			'max_amount'     => array(
 				'title'             => __( 'Importe máximo (€)', 'fliinow-checkout' ),
@@ -101,13 +104,16 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 				'description'       => __( '0 = sin límite.', 'fliinow-checkout' ),
 				'default'           => '0',
 				'desc_tip'          => true,
-				'custom_attributes' => array( 'min' => '0', 'step' => '0.01' ),
+				'custom_attributes' => array(
+					'min'  => '0',
+					'step' => '0.01',
+				),
 			),
 			'package_travel' => array(
-				'title'       => __( 'Viaje combinado', 'fliinow-checkout' ),
-				'type'        => 'checkbox',
-				'label'       => __( 'Marcar como viaje combinado (EU Package Travel Directive)', 'fliinow-checkout' ),
-				'default'     => 'yes',
+				'title'   => __( 'Viaje combinado', 'fliinow-checkout' ),
+				'type'    => 'checkbox',
+				'label'   => __( 'Marcar como viaje combinado (EU Package Travel Directive)', 'fliinow-checkout' ),
+				'default' => 'yes',
 			),
 			'debug'          => array(
 				'title'       => __( 'Log de depuración', 'fliinow-checkout' ),
@@ -135,7 +141,9 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		$nonce = wp_create_nonce( 'fliinow_health_check' );
 		$ajax  = admin_url( 'admin-ajax.php' );
 
-		wp_add_inline_script( 'jquery', "
+		wp_add_inline_script(
+			'jquery',
+			"
 			jQuery(function($){
 				$('#fliinow-health-check').on('click',function(){
 					var btn = $(this), res = $('#fliinow-health-result');
@@ -148,7 +156,8 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 					}).fail(function(){btn.prop('disabled',false);res.text('✗ Error de conexión').css('color','red');});
 				});
 			});
-		" );
+		"
+		);
 	}
 
 	// ── Availability ──────────────────────────────────────────────────────
@@ -203,8 +212,8 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		}
 
 		// Prevent duplicate operations on double-submit: reuse existing if present and valid.
-		$existing_op_id  = $order->get_meta( '_fliinow_operation_id' );
-		$existing_url    = $order->get_meta( '_fliinow_financing_url' );
+		$existing_op_id = $order->get_meta( '_fliinow_operation_id' );
+		$existing_url   = $order->get_meta( '_fliinow_financing_url' );
 		if ( ! empty( $existing_op_id ) && ! empty( $existing_url ) && $order->has_status( 'pending' ) ) {
 			$this->log( 'Reusing existing operation ' . $existing_op_id . ' for order #' . $order_id );
 			return array(
@@ -316,6 +325,7 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 		}
 		$package_name = ! empty( $items_desc )
 			? mb_substr( implode( ', ', $items_desc ), 0, 200 )
+			/* translators: %s: order ID */
 			: sprintf( __( 'Pedido #%s', 'fliinow-checkout' ), $order->get_id() );
 
 		$data = array(
@@ -326,10 +336,10 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 				'email'                => $order->get_billing_email(),
 				'prefix'               => $prefix,
 				'phone'                => $phone,
-				'documentId'           => $order->get_meta( '_billing_document_id' ) ?: '',
-				'documentValidityDate' => $order->get_meta( '_billing_document_validity' ) ?: '',
+				'documentId'           => $order->get_meta( '_billing_document_id' ) ? $order->get_meta( '_billing_document_id' ) : '',
+				'documentValidityDate' => $order->get_meta( '_billing_document_validity' ) ? $order->get_meta( '_billing_document_validity' ) : '',
 				'gender'               => $this->normalize_gender( $order->get_meta( '_billing_gender' ) ),
-				'birthDate'            => $order->get_meta( '_billing_birth_date' ) ?: '',
+				'birthDate'            => $order->get_meta( '_billing_birth_date' ) ? $order->get_meta( '_billing_birth_date' ) : '',
 				'nationality'          => $this->get_nationality_code( $order->get_billing_country() ),
 				'address'              => trim( $order->get_billing_address_1() . ' ' . $order->get_billing_address_2() ),
 				'city'                 => $order->get_billing_city(),
@@ -368,7 +378,13 @@ class Fliinow_Gateway extends WC_Payment_Gateway {
 			return $val;
 		}
 		// Accept common Spanish equivalents.
-		$map = array( 'HOMBRE' => 'MALE', 'MUJER' => 'FEMALE', 'M' => 'MALE', 'F' => 'FEMALE', 'H' => 'MALE' );
+		$map = array(
+			'HOMBRE' => 'MALE',
+			'MUJER'  => 'FEMALE',
+			'M'      => 'MALE',
+			'F'      => 'FEMALE',
+			'H'      => 'MALE',
+		);
 		return $map[ $val ] ?? 'MALE';
 	}
 
