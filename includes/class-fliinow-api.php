@@ -5,7 +5,7 @@
  * Robust HTTP wrapper around the Fliinow Partner API v1.
  * Uses WordPress HTTP API with retry logic, structured errors, and logging.
  *
- * @package Fliinow_WooCommerce
+ * @package Fliinow_Checkout
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -103,7 +103,7 @@ class Fliinow_API {
 				'X-Fliinow-API-Key' => $this->api_key,
 				'Content-Type'      => 'application/json',
 				'Accept'            => 'application/json',
-				'User-Agent'        => 'FliinowWooCommerce/' . FLIINOW_WC_VERSION . ' WordPress/' . get_bloginfo( 'version' ),
+				'User-Agent'        => 'FliinowCheckout/' . FLIINOW_WC_VERSION . ' WordPress/' . get_bloginfo( 'version' ),
 			),
 			'timeout'   => $this->timeout,
 			'sslverify' => true,

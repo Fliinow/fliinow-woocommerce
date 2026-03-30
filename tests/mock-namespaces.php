@@ -5,7 +5,7 @@
  * PHP requires namespace declarations at the very top of a file or in
  * separate files. This file provides the Blocks mocks.
  *
- * @package Fliinow_WooCommerce\Tests
+ * @package Fliinow_Checkout\Tests
  */
 
 namespace Automattic\WooCommerce\Blocks\Payments\Integrations;

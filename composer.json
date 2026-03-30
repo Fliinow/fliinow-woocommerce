@@ -1,6 +1,6 @@
 {
-    "name": "fliinow/fliinow-woocommerce",
-    "description": "Fliinow financing payment method for WooCommerce",
+    "name": "fliinow/fliinow-checkout",
+    "description": "Fliinow checkout financing payment method for WooCommerce",
     "type": "wordpress-plugin",
     "require-dev": {
         "phpunit/phpunit": "^9.6"

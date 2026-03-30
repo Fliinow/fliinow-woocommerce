@@ -1,10 +1,10 @@
 <?php
 /**
- * Fliinow WooCommerce — Uninstall.
+ * Fliinow — Uninstall.
  *
  * Removes all plugin data when uninstalled through WordPress admin.
  *
- * @package Fliinow_WooCommerce
+ * @package Fliinow_Checkout
  */
 
 // Exit if not called by WordPress uninstall process.

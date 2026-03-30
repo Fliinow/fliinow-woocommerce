@@ -1,14 +1,14 @@
 <?php
 /**
- * Plugin Name: Fliinow - Financiación para WooCommerce
+ * Plugin Name: Fliinow – Checkout Financing
  * Plugin URI: https://api.docs.fliinow.com/
- * Description: Ofrece financiación a plazos en el checkout de WooCommerce con Fliinow. Compatible con WooCommerce Blocks.
- * Version: 1.2.1
+ * Description: Offer installment financing at your WooCommerce checkout with Fliinow. Compatible with WooCommerce Blocks.
+ * Version: 1.3.0
  * Author: Fliinow
  * Author URI: https://fliinow.com
  * License: GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: fliinow-woocommerce
+ * Text Domain: fliinow-checkout
  * Domain Path: /languages
  * Requires at least: 6.0
  * Tested up to: 6.7
@@ -17,12 +17,12 @@
  * WC requires at least: 8.0
  * WC tested up to: 9.6
  *
- * @package Fliinow_WooCommerce
+ * @package Fliinow_Checkout
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FLIINOW_WC_VERSION', '1.2.1' );
+define( 'FLIINOW_WC_VERSION', '1.3.0' );
 define( 'FLIINOW_WC_PLUGIN_FILE', __FILE__ );
 define( 'FLIINOW_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'FLIINOW_WC_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -40,7 +40,7 @@ add_action(
 
 // ─── Load text domain ──────────────────────────────────────────────────────
 add_action( 'init', function () {
-	load_plugin_textdomain( 'fliinow-woocommerce', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	load_plugin_textdomain( 'fliinow-checkout', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 } );
 
 // ─── Core init ─────────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ function fliinow_wc_init() {
 function fliinow_wc_missing_wc_notice() {
 	printf(
 		'<div class="notice notice-error"><p>%s</p></div>',
-		esc_html__( 'Fliinow para WooCommerce requiere que WooCommerce esté instalado y activo.', 'fliinow-woocommerce' )
+		esc_html__( 'Fliinow para WooCommerce requiere que WooCommerce esté instalado y activo.', 'fliinow-checkout' )
 	);
 }
 
@@ -97,7 +97,7 @@ add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), function ( arr
 	$url = admin_url( 'admin.php?page=wc-settings&tab=checkout&section=fliinow' );
 	array_unshift(
 		$links,
-		'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Ajustes', 'fliinow-woocommerce' ) . '</a>'
+		'<a href="' . esc_url( $url ) . '">' . esc_html__( 'Ajustes', 'fliinow-checkout' ) . '</a>'
 	);
 	return $links;
 } );
@@ -115,7 +115,7 @@ function fliinow_wc_ajax_health_check() {
 	$sandbox  = ( $settings['sandbox'] ?? 'yes' ) === 'yes';
 
 	if ( empty( $api_key ) ) {
-		wp_send_json_error( array( 'message' => __( 'API Key no configurada.', 'fliinow-woocommerce' ) ) );
+		wp_send_json_error( array( 'message' => __( 'API Key no configurada.', 'fliinow-checkout' ) ) );
 	}
 
 	$api    = new Fliinow_API( $api_key, $sandbox );
@@ -127,7 +127,7 @@ function fliinow_wc_ajax_health_check() {
 
 	$env = $sandbox ? 'sandbox' : 'production';
 	wp_send_json_success( array(
-		'message' => sprintf( __( 'Conexión OK (%s)', 'fliinow-woocommerce' ), $env ),
+		'message' => sprintf( __( 'Conexión OK (%s)', 'fliinow-checkout' ), $env ),
 	) );
 }
 
@@ -199,12 +199,12 @@ function fliinow_wc_check_pending_orders() {
 		if ( in_array( $new_status, array( 'FAVORABLE', 'CONFIRMED', 'FINISHED' ), true ) ) {
 			$order->payment_complete( $operation_id );
 			$order->add_order_note(
-				sprintf( __( '[Cron] Financiación Fliinow aprobada — %s', 'fliinow-woocommerce' ), $new_status )
+				sprintf( __( '[Cron] Financiación Fliinow aprobada — %s', 'fliinow-checkout' ), $new_status )
 			);
 			$stats['completed']++;
 		} elseif ( in_array( $new_status, array( 'REFUSED', 'EXPIRED', 'ERROR' ), true ) ) {
 			$order->set_status( 'cancelled',
-				sprintf( __( '[Cron] Financiación rechazada/expirada — %s', 'fliinow-woocommerce' ), $new_status )
+				sprintf( __( '[Cron] Financiación rechazada/expirada — %s', 'fliinow-checkout' ), $new_status )
 			);
 			$stats['cancelled']++;
 		}
@@ -263,7 +263,7 @@ add_action( 'admin_notices', function () {
 	}
 	printf(
 		'<div class="notice notice-warning"><p><strong>Fliinow:</strong> %s %s</p></div>',
-		esc_html__( 'La API no responde correctamente.', 'fliinow-woocommerce' ),
+		esc_html__( 'La API no responde correctamente.', 'fliinow-checkout' ),
 		esc_html( $failure )
 	);
 } );

@@ -5,7 +5,7 @@
  * Provides lightweight mocks for WordPress and WooCommerce so that
  * plugin unit tests can run without a full WordPress installation.
  *
- * @package Fliinow_WooCommerce\Tests
+ * @package Fliinow_Checkout\Tests
  */
 
 // ── Constants ──────────────────────────────────────────────────────────────
@@ -16,10 +16,10 @@ if ( defined( 'FLIINOW_TEST_BOOTSTRAP_LOADED' ) ) {
 define( 'FLIINOW_TEST_BOOTSTRAP_LOADED', true );
 
 define( 'ABSPATH', '/tmp/wordpress/' );
-define( 'FLIINOW_WC_VERSION', '1.2.1' );
-define( 'FLIINOW_WC_PLUGIN_FILE', dirname( __DIR__ ) . '/fliinow-woocommerce.php' );
+define( 'FLIINOW_WC_VERSION', '1.3.0' );
+define( 'FLIINOW_WC_PLUGIN_FILE', dirname( __DIR__ ) . '/fliinow-checkout.php' );
 define( 'FLIINOW_WC_PLUGIN_DIR', dirname( __DIR__ ) . '/' );
-define( 'FLIINOW_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/fliinow-woocommerce/' );
+define( 'FLIINOW_WC_PLUGIN_URL', 'https://example.com/wp-content/plugins/fliinow-checkout/' );
 
 if ( ! defined( 'DAY_IN_SECONDS' ) ) {
 	define( 'DAY_IN_SECONDS', 86400 );
@@ -296,7 +296,7 @@ function add_query_arg( $args, string $url = '' ): string {
 }
 
 function plugin_basename( string $file ): string {
-	return 'fliinow-woocommerce/' . basename( $file );
+	return 'fliinow-checkout/' . basename( $file );
 }
 
 function plugin_dir_path( string $file ): string {
@@ -304,7 +304,7 @@ function plugin_dir_path( string $file ): string {
 }
 
 function plugin_dir_url( string $file ): string {
-	return 'https://example.com/wp-content/plugins/fliinow-woocommerce/';
+	return 'https://example.com/wp-content/plugins/fliinow-checkout/';
 }
 
 function load_plugin_textdomain( string $domain, $deprecated = false, $path = '' ): bool {

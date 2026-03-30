@@ -2,7 +2,7 @@
 /**
  * Unit tests for Fliinow_Gateway.
  *
- * @package Fliinow_WooCommerce\Tests\Unit
+ * @package Fliinow_Checkout\Tests\Unit
  */
 
 class Test_Fliinow_Gateway extends PHPUnit\Framework\TestCase {

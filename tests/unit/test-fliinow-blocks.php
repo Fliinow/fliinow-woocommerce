@@ -2,7 +2,7 @@
 /**
  * Unit tests for Fliinow_Blocks_Payment_Method.
  *
- * @package Fliinow_WooCommerce\Tests\Unit
+ * @package Fliinow_Checkout\Tests\Unit
  */
 
 class Test_Fliinow_Blocks extends PHPUnit\Framework\TestCase {

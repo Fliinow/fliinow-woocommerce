@@ -1,4 +1,4 @@
-# Fliinow - Financing for WooCommerce
+# Fliinow – Checkout Financing
 
 [![PHP Tests](https://img.shields.io/badge/PHPUnit-135%20tests-brightgreen)](#testing)
 [![JS Tests](https://img.shields.io/badge/Jest-17%20tests-brightgreen)](#testing)
@@ -12,8 +12,8 @@ WooCommerce payment gateway that integrates Fliinow as an installment financing 
 ## Structure
 
 ```
-fliinow-woocommerce/
-├── fliinow-woocommerce.php           # Main plugin file
+fliinow-checkout/
+├── fliinow-checkout.php           # Main plugin file
 ├── uninstall.php                     # Clean-up on uninstall
 ├── includes/
 │   ├── class-fliinow-api.php         # PHP client for the Fliinow API
@@ -36,20 +36,20 @@ fliinow-woocommerce/
 ### 1. Copy the plugin
 
 ```bash
-cp -r fliinow-woocommerce /path/to/wordpress/wp-content/plugins/
+cp -r fliinow-checkout /path/to/wordpress/wp-content/plugins/
 ```
 
 ### 2. Build JavaScript (required for WooCommerce Blocks)
 
 ```bash
-cd fliinow-woocommerce
+cd fliinow-checkout
 npm install
 npm run build
 ```
 
 ### 3. Activate in WordPress
 
-Go to **Plugins** → **Activate** "Fliinow - Financiación para WooCommerce"
+Go to **Plugins** → **Activate** "Fliinow – Checkout Financing"
 
 ### 4. Configure
 
@@ -215,7 +215,7 @@ Copy `phpunit.xml.dist` to `phpunit.xml` and set your sandbox API key in `FLIINO
 
 Install the plugin from GitHub Releases:
 
-1. Go to [Releases](../../releases) and download `fliinow-woocommerce-X.X.X.zip`
+1. Go to [Releases](../../releases) and download `fliinow-checkout-X.X.X.zip`
 2. In WordPress: **Plugins → Add New → Upload Plugin** → select the ZIP
 3. Activate and configure at **WooCommerce → Settings → Payments → Fliinow**
 
@@ -226,11 +226,11 @@ Install the plugin from GitHub Releases:
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/Fliinow/fliinow-woocommerce"
+      "url": "https://github.com/Fliinow/fliinow-checkout"
     }
   ],
   "require": {
-    "fliinow/fliinow-woocommerce": "^1.0"
+    "fliinow/fliinow-checkout": "^1.0"
   }
 }
 ```
@@ -240,8 +240,8 @@ Install the plugin from GitHub Releases:
 ```bash
 # From the plugin root
 npm run build
-git archive --format=zip --prefix=fliinow-woocommerce/ -o fliinow-woocommerce-1.2.0.zip HEAD -- \
-  fliinow-woocommerce.php \
+git archive --format=zip --prefix=fliinow-checkout/ -o fliinow-checkout-1.3.0.zip HEAD -- \
+  fliinow-checkout.php \
   includes/ \
   build/ \
   assets/ \
@@ -252,7 +252,7 @@ git archive --format=zip --prefix=fliinow-woocommerce/ -o fliinow-woocommerce-1.
   LICENSE
 
 # Or with gh CLI
-gh release create v1.2.0 fliinow-woocommerce-1.2.0.zip --title "v1.2.0" --notes "Observability, retry, health monitoring"
+gh release create v1.3.0 fliinow-checkout-1.3.0.zip --title "v1.3.0" --notes "Rename plugin for WP.org compliance"
 ```
 
 ## API Reference
